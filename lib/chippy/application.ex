@@ -11,9 +11,10 @@ defmodule Chippy.Application do
       # Start the Ecto repository
       Chippy.Repo,
       # Start the endpoint when the application starts
-      ChippyWeb.Endpoint
+      ChippyWeb.Endpoint,
       # Starts a worker by calling: Chippy.Worker.start_link(arg)
       # {Chippy.Worker, arg},
+      {Registry, keys: :unique, name: :sprint_registry},
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
