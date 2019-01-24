@@ -19,31 +19,31 @@ defmodule Chippy.Sprint do
     }
   end
 
-  defp add_chip_to_project(project, player_name) do
-    Map.update(project, player_name, 1, &(&1 + 1))
+  defp add_chip_to_project(project, person_name) do
+    Map.update(project, person_name, 1, &(&1 + 1))
   end
 
-  defp remove_chip_from_project(project, player_name) do
-    {chips, new_project} = Map.pop(project, player_name)
+  defp remove_chip_from_project(project, person_name) do
+    {chips, new_project} = Map.pop(project, person_name)
     case chips do
       1 -> new_project
       nil -> new_project
-      _ -> Map.put(new_project, player_name, chips - 1)
+      _ -> Map.put(new_project, person_name, chips - 1)
     end
   end
 
-  def add_chip(%Sprint{project_allocations: project_allocations} = sprint, project_name, player_name) do
+  def add_chip(%Sprint{project_allocations: project_allocations} = sprint, project_name, person_name) do
     new_project_allocations =
       project_allocations
-      |> Map.update(project_name, %{}, &add_chip_to_project(&1, player_name))
+      |> Map.update(project_name, %{}, &add_chip_to_project(&1, person_name))
     
       %Sprint{ sprint | project_allocations: new_project_allocations }
   end
 
-  def remove_chip(%Sprint{project_allocations: project_allocations} = sprint, project_name, player_name) do
+  def remove_chip(%Sprint{project_allocations: project_allocations} = sprint, project_name, person_name) do
     new_project_allocations =
       project_allocations
-      |> Map.update(project_name, %{}, &remove_chip_from_project(&1, player_name))
+      |> Map.update(project_name, %{}, &remove_chip_from_project(&1, person_name))
     
       %Sprint{ sprint | project_allocations: new_project_allocations }
   end
