@@ -3,7 +3,7 @@ defmodule Chippy.SprintServer do
 
   alias Chippy.Sprint
 
-  @timeout :timer.minutes(15)
+  @timeout :timer.minutes(5)
 
   def start_link(sprint_name, project_names) do
     GenServer.start_link(__MODULE__, project_names, name: via_tuple(sprint_name))
@@ -29,5 +29,9 @@ defmodule Chippy.SprintServer do
   def handle_call({:remove_chip, project_name, person_name}, _from, sprint) do
     new_sprint = Sprint.remove_chip(sprint, project_name, person_name)
     {:reply, new_sprint, new_sprint, @timeout}
+  end
+
+  def handle_info(:timeout, sprint) do
+    {:stop, {:shutdown, :timeout}, sprint}
   end
 end
