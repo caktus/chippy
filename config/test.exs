@@ -11,8 +11,5 @@ config :logger, level: :warn
 
 # Configure your database
 config :chippy, Chippy.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "chippy_test",
-  hostname: "localhost",
+  url: System.get_env("DATABASE_URL") || "postgres://postgres:postgres@localhost/chippy_test",
   pool: Ecto.Adapters.SQL.Sandbox
