@@ -20,6 +20,18 @@ defmodule Chippy.SprintServer do
     |> GenServer.call({:add_project, project_name})
   end
 
+  def add_chip(sprint_name, project_name, person_name) do
+    sprint_name
+    |> via_tuple
+    |> GenServer.call({:add_chip, project_name, person_name})
+  end
+
+  def remove_chip(sprint_name, project_name, person_name) do
+    sprint_name
+    |> via_tuple
+    |> GenServer.call({:remove_chip, project_name, person_name})
+  end
+
   def display(sprint_name) do
     sprint_name
     |> via_tuple

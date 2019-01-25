@@ -1,22 +1,32 @@
 import React from "react";
-import { chain, sortBy } from 'lodash';
+import { chain, sortBy, times } from "lodash";
 
+const THE_ONLY_USER_THUS_FAR = "nmashton";
 
-const Project = ({name}) => (
+const Project = ({ name, alloc, addChip, removeChip }) => (
   <div className="row">
     <div className="column column-20">
+      <div className="row">{name}</div>
       <div className="row">
-        {name}
-      </div>
-      <div className="row">
-        <button className="button button-small button-clear">-</button>
-        <button className="button button-small button-clear">+</button>
+        <button
+          className="button button-small button-clear"
+          onClick={removeChip}
+        >
+          -
+        </button>
+        <button className="button button-small button-clear" onClick={addChip}>
+          +
+        </button>
       </div>
     </div>
     <div className="column column-80">
-      <div className="row">
-        Chips go here
-      </div>
+      {alloc.map(([user, chips]) => (
+        <div className="row">
+          {times(chips, () => (
+            <span className="chip user-1" />
+          ))}
+        </div>
+      ))}
     </div>
   </div>
 );
@@ -28,7 +38,7 @@ class SprintBoard extends React.Component {
       channel: null,
       channelError: null,
       newProjectName: "",
-      sprintData: {},
+      sprintData: {}
     };
   }
 
@@ -39,8 +49,8 @@ class SprintBoard extends React.Component {
   onDisplay = resp => {
     console.log("Display data received:", resp);
     this.setState({
-      sprintData: resp,
-    })
+      sprintData: resp
+    });
   };
 
   componentDidMount() {
@@ -62,23 +72,44 @@ class SprintBoard extends React.Component {
   }
 
   addProject = () => {
-    this.state.channel.push('new_project', { project_name: this.state.newProjectName});
+    this.state.channel.push("new_project", {
+      project_name: this.state.newProjectName
+    });
+  };
+
+  addChipTo = projectName => () => {
+    this.state.channel.push("add_chip", {
+      project_name: projectName,
+      person_name: THE_ONLY_USER_THUS_FAR
+    });
+  };
+
+  removeChipFrom = projectName => () => {
+    this.state.channel.push("remove_chip", {
+      project_name: projectName,
+      person_name: THE_ONLY_USER_THUS_FAR
+    });
   };
 
   render() {
-    const projects =
-      chain(Object.entries(this.state.sprintData.project_allocations || {}))
-      .sortBy(([k,v]) => k)
+    const projects = chain(
+      Object.entries(this.state.sprintData.project_allocations || {})
+    )
+      .sortBy(([k, v]) => k)
       .map(([k, v]) => [k, sortBy(Object.entries(v), ([k, v]) => k)])
       .value();
 
     return (
       <section className="chips">
-        {
-          projects.map(project => (
-            <Project key={project[0]} name={project[0]} />
-          ))
-        }
+        {projects.map(([name, alloc]) => (
+          <Project
+            key={name}
+            name={name}
+            alloc={alloc}
+            addChip={this.addChipTo(name)}
+            removeChip={this.removeChipFrom(name)}
+          />
+        ))}
         <div className="row">
           <div className="column column-20">
             <div className="row">

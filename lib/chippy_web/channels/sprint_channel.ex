@@ -35,4 +35,40 @@ defmodule ChippyWeb.SprintChannel do
         {:noreply, "Sprint not found"}
     end
   end
+
+  def handle_in(
+        "add_chip",
+        %{"project_name" => project_name, "person_name" => person_name},
+        socket
+      ) do
+    "sprint:" <> sid = socket.topic
+
+    case SprintServer.sprint_pid(sid) do
+      pid when is_pid(pid) ->
+        new_sprint = SprintServer.add_chip(sid, project_name, person_name)
+        broadcast!(socket, "display", new_sprint)
+        {:noreply, socket}
+
+      nil ->
+        {:noreply, "Sprint not found"}
+    end
+  end
+
+  def handle_in(
+        "remove_chip",
+        %{"project_name" => project_name, "person_name" => person_name},
+        socket
+      ) do
+    "sprint:" <> sid = socket.topic
+
+    case SprintServer.sprint_pid(sid) do
+      pid when is_pid(pid) ->
+        new_sprint = SprintServer.remove_chip(sid, project_name, person_name)
+        broadcast!(socket, "display", new_sprint)
+        {:noreply, socket}
+
+      nil ->
+        {:noreply, "Sprint not found"}
+    end
+  end
 end
