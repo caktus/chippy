@@ -17,65 +17,69 @@ defmodule Chippy.Sprint do
     }
   end
 
-  defp add_chip_to_project(project, person_name) do
-    Map.update(project, person_name, 1, &(&1 + 1))
+  defp add_chips_to_project(project, person_name, chip_count) do
+    Map.update(project, person_name, chip_count, &(&1 + chip_count))
   end
 
-  defp remove_chip_from_project(project, person_name) do
+  defp remove_chips_from_project(project, person_name, chip_count) do
     {chips, new_project} = Map.pop(project, person_name)
 
-    case chips do
-      1 -> new_project
-      nil -> new_project
-      _ -> Map.put(new_project, person_name, chips - 1)
+    cond do
+      nil == chips -> new_project
+      chips <= chip_count -> new_project
+      true -> Map.put(new_project, person_name, chips - chip_count)
     end
   end
 
   @doc """
-  Adds a chip to a user's project allocation on a sprint.
+  Adds chips to a user's project allocation on a sprint.
 
     iex> Sprint.new(["Foo", "Bar"]) \
-      |> Sprint.add_chip("Foo", "nmashton")
-    %Sprint{project_allocations: %{"Bar" => %{}, "Foo" => %{"nmashton" => 1}}}
+      |> Sprint.add_chips("Foo", "nmashton", 3)
+    %Sprint{project_allocations: %{"Bar" => %{}, "Foo" => %{"nmashton" => 3}}}
   """
-  def add_chip(
-        %Sprint{project_allocations: project_allocations} = sprint,
-        project_name,
-        person_name
-      ) do
+  def add_chips(
+    %Sprint{project_allocations: project_allocations} = sprint,
+    project_name,
+    person_name,
+    chip_count
+  ) do
     new_project_allocations =
       project_allocations
-      |> Map.update(project_name, %{}, &add_chip_to_project(&1, person_name))
+      |> Map.update(project_name, %{}, &add_chips_to_project(&1, person_name, chip_count))
 
     %Sprint{sprint | project_allocations: new_project_allocations}
   end
 
   @doc """
-  Removes a chip from a user's project allocation. If there are no chips
-  left, removes them altogether.
+  Removes chips from a user's project allocation. If there are too few chips,
+  remove the user altogether.
 
     iex> Sprint.new(["Foo", "Bar"]) \
-      |> Sprint.add_chip("Foo", "nmashton") \
-      |> Sprint.add_chip("Foo", "nmashton") \
-      |> Sprint.remove_chip("Foo", "nmashton")
+      |> Sprint.add_chips("Foo", "nmashton", 3) \
+      |> Sprint.remove_chips("Foo", "nmashton", 2)
     %Sprint{project_allocations: %{"Bar" => %{}, "Foo" => %{"nmashton" => 1}}}
 
 
     iex> Sprint.new(["Foo", "Bar"]) \
-      |> Sprint.add_chip("Foo", "nmashton") \
-      |> Sprint.add_chip("Foo", "nmashton") \
-      |> Sprint.remove_chip("Foo", "nmashton") \
-      |> Sprint.remove_chip("Foo", "nmashton")
+      |> Sprint.add_chips("Foo", "nmashton", 3) \
+      |> Sprint.remove_chips("Foo", "nmashton", 3)
+    %Sprint{project_allocations: %{"Bar" => %{}, "Foo" => %{}}}
+
+    # if they're not there, doesn't matter
+    iex> Sprint.new(["Foo", "Bar"]) \
+      |> Sprint.remove_chips("Foo", "nmashton", 1_024)
     %Sprint{project_allocations: %{"Bar" => %{}, "Foo" => %{}}}
   """
-  def remove_chip(
+  def remove_chips(
         %Sprint{project_allocations: project_allocations} = sprint,
         project_name,
-        person_name
+        person_name,
+        chip_count
       ) do
     new_project_allocations =
       project_allocations
-      |> Map.update(project_name, %{}, &remove_chip_from_project(&1, person_name))
+      |> Map.update(project_name, %{}, &remove_chips_from_project(&1, person_name, chip_count))
 
     %Sprint{sprint | project_allocations: new_project_allocations}
   end
@@ -111,12 +115,11 @@ defmodule Chippy.Sprint do
   easily display chips user by user.
 
     iex> Sprint.new(["Foo", "Bar"]) \
-      |> Sprint.add_chip("Foo", "nmashton") \
-      |> Sprint.add_chip("Foo", "vkurup") \
-      |> Sprint.add_chip("Bar", "vkurup") \
-      |> Sprint.add_chip("Foo", "nmashton") \
+      |> Sprint.add_chips("Foo", "nmashton", 2) \
+      |> Sprint.add_chips("Foo", "vkurup", 3) \
+      |> Sprint.add_chips("Bar", "vkurup", 1) \
       |> Sprint.display_by_users
-    %{"vkurup" => %{"Bar" => 1, "Foo" => 1}, "nmashton" => %{"Foo" => 2}}
+    %{"vkurup" => %{"Bar" => 1, "Foo" => 3}, "nmashton" => %{"Foo" => 2}}
   """
   def display_by_users(sprint) do
     sprint.project_allocations

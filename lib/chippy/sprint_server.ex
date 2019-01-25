@@ -22,12 +22,12 @@ defmodule Chippy.SprintServer do
   end
 
   def handle_call({:add_chip, project_name, person_name}, _from, sprint) do
-    new_sprint = Sprint.add_chip(sprint, project_name, person_name)
+    new_sprint = Sprint.add_chips(sprint, project_name, person_name, 1)
     {:reply, new_sprint, new_sprint, @timeout}
   end
 
   def handle_call({:remove_chip, project_name, person_name}, _from, sprint) do
-    new_sprint = Sprint.remove_chip(sprint, project_name, person_name)
+    new_sprint = Sprint.remove_chips(sprint, project_name, person_name, 1)
     {:reply, new_sprint, new_sprint, @timeout}
   end
 
