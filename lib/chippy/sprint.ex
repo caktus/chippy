@@ -138,6 +138,6 @@ defmodule Chippy.Sprint do
   def display_projects(sprint) do
     sprint.project_allocations
     |> Enum.map(fn {project_name, _} -> project_name end)
-    |> Enum.sort
+    |> Enum.sort()
   end
 end

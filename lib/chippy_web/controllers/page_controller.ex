@@ -17,9 +17,9 @@ defmodule ChippyWeb.PageController do
       |> Sprint.add_chips("Moda", "vkurup", 4)
       |> Sprint.add_chips("SAM", "vkurup", 8)
       |> Sprint.add_chips("Moda", "daaray", 6)
-    
+
     by_user = Sprint.display_by_users(fake_sprint)
-    
+
     project_list = Sprint.display_projects(fake_sprint)
 
     conn
