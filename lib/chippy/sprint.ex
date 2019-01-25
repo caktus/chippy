@@ -128,4 +128,16 @@ defmodule Chippy.Sprint do
       &Sprint.merge_allocs_for_project/2
     )
   end
+
+  @doc """
+  Returns the projects for a sprint, sorted alphabetically.
+
+    iex> Sprint.new(["Foo", "Bar"]) |> Sprint.display_projects
+    ["Bar", "Foo"]
+  """
+  def display_projects(sprint) do
+    sprint.project_allocations
+    |> Enum.map(fn {project_name, _} -> project_name end)
+    |> Enum.sort
+  end
 end
