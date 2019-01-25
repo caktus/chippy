@@ -75,6 +75,10 @@ class SprintBoard extends React.Component {
     this.state.channel.push("new_project", {
       project_name: this.state.newProjectName
     });
+
+    this.setState({
+      newProjectName: ""
+    });
   };
 
   addChipTo = projectName => () => {
@@ -119,6 +123,11 @@ class SprintBoard extends React.Component {
                 value={this.state.newProjectName}
                 onChange={({ target: { value } }) => {
                   this.setState({ newProjectName: value });
+                }}
+                onKeyPress={({ key }) => {
+                  if (key === "Enter") {
+                    this.addProject();
+                  }
                 }}
               />
             </div>
