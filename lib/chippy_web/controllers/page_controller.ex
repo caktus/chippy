@@ -32,6 +32,7 @@ defmodule ChippyWeb.PageController do
       pid when is_pid(pid) ->
         conn
         |> assign(:by_users, SprintServer.display_by_users(sprint_id))
+        |> assign(:sid, sprint_id)
         # TODO: do something with :by_users value?
         |> render("sprint.html")
 
