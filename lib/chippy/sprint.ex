@@ -17,41 +17,127 @@ defmodule Chippy.Sprint do
     }
   end
 
-  defp add_chip_to_project(project, person_name) do
-    Map.update(project, person_name, 1, &(&1 + 1))
+  defp add_chips_to_project(project, person_name, chip_count) do
+    Map.update(project, person_name, chip_count, &(&1 + chip_count))
   end
 
-  defp remove_chip_from_project(project, person_name) do
+  defp remove_chips_from_project(project, person_name, chip_count) do
     {chips, new_project} = Map.pop(project, person_name)
 
-    case chips do
-      1 -> new_project
-      nil -> new_project
-      _ -> Map.put(new_project, person_name, chips - 1)
+    cond do
+      nil == chips -> new_project
+      chips <= chip_count -> new_project
+      true -> Map.put(new_project, person_name, chips - chip_count)
     end
   end
 
-  def add_chip(
+  @doc """
+  Adds chips to a user's project allocation on a sprint.
+
+    iex> Sprint.new(["Foo", "Bar"]) \
+      |> Sprint.add_chips("Foo", "nmashton", 3)
+    %Sprint{project_allocations: %{"Bar" => %{}, "Foo" => %{"nmashton" => 3}}}
+  """
+  def add_chips(
         %Sprint{project_allocations: project_allocations} = sprint,
         project_name,
-        person_name
+        person_name,
+        chip_count
       ) do
     new_project_allocations =
       project_allocations
-      |> Map.update(project_name, %{}, &add_chip_to_project(&1, person_name))
+      |> Map.update(project_name, %{}, &add_chips_to_project(&1, person_name, chip_count))
 
     %Sprint{sprint | project_allocations: new_project_allocations}
   end
 
-  def remove_chip(
+  @doc """
+  Removes chips from a user's project allocation. If there are too few chips,
+  remove the user altogether.
+
+    iex> Sprint.new(["Foo", "Bar"]) \
+      |> Sprint.add_chips("Foo", "nmashton", 3) \
+      |> Sprint.remove_chips("Foo", "nmashton", 2)
+    %Sprint{project_allocations: %{"Bar" => %{}, "Foo" => %{"nmashton" => 1}}}
+
+
+    iex> Sprint.new(["Foo", "Bar"]) \
+      |> Sprint.add_chips("Foo", "nmashton", 3) \
+      |> Sprint.remove_chips("Foo", "nmashton", 3)
+    %Sprint{project_allocations: %{"Bar" => %{}, "Foo" => %{}}}
+
+    # if they're not there, doesn't matter
+    iex> Sprint.new(["Foo", "Bar"]) \
+      |> Sprint.remove_chips("Foo", "nmashton", 1_024)
+    %Sprint{project_allocations: %{"Bar" => %{}, "Foo" => %{}}}
+  """
+  def remove_chips(
         %Sprint{project_allocations: project_allocations} = sprint,
         project_name,
-        person_name
+        person_name,
+        chip_count
       ) do
     new_project_allocations =
       project_allocations
-      |> Map.update(project_name, %{}, &remove_chip_from_project(&1, person_name))
+      |> Map.update(project_name, %{}, &remove_chips_from_project(&1, person_name, chip_count))
 
     %Sprint{sprint | project_allocations: new_project_allocations}
+  end
+
+  def merge_alloc_fragments(alloc1, alloc2) do
+    Map.merge(
+      alloc1,
+      alloc2,
+      fn _k, proj1, proj2 ->
+        Map.merge(
+          proj1,
+          proj2,
+          fn _k, v1, v2 -> v1 + v2 end
+        )
+      end
+    )
+  end
+
+  def merge_allocs_for_project({project_name, project_allocs}, allocs_by_person) do
+    project_allocs_by_person =
+      project_allocs
+      |> Enum.map(fn {person_name, count} -> %{person_name => %{project_name => count}} end)
+
+    Enum.reduce(
+      project_allocs_by_person,
+      allocs_by_person,
+      &Sprint.merge_alloc_fragments/2
+    )
+  end
+
+  @doc """
+  Turns the project allocations map "inside out" so that we can
+  easily display chips user by user.
+
+    iex> Sprint.new(["Foo", "Bar"]) \
+      |> Sprint.add_chips("Foo", "nmashton", 2) \
+      |> Sprint.add_chips("Foo", "vkurup", 3) \
+      |> Sprint.add_chips("Bar", "vkurup", 1) \
+      |> Sprint.display_by_users
+    %{"vkurup" => %{"Bar" => 1, "Foo" => 3}, "nmashton" => %{"Foo" => 2}}
+  """
+  def display_by_users(sprint) do
+    sprint.project_allocations
+    |> Enum.reduce(
+      %{},
+      &Sprint.merge_allocs_for_project/2
+    )
+  end
+
+  @doc """
+  Returns the projects for a sprint, sorted alphabetically.
+
+    iex> Sprint.new(["Foo", "Bar"]) |> Sprint.display_projects
+    ["Bar", "Foo"]
+  """
+  def display_projects(sprint) do
+    sprint.project_allocations
+    |> Enum.map(fn {project_name, _} -> project_name end)
+    |> Enum.sort()
   end
 end
