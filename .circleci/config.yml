@@ -18,6 +18,10 @@ jobs:  # basic units of work in a run
     steps:  # commands that comprise the `build` job
       - checkout  # check out source code to working directory
 
+      - run:
+          name: Create blank test config file
+          command: touch config/test.secret.exs
+
       - run: mix local.hex --force  # install Hex locally (without prompt)
       - run: mix local.rebar --force  # fetch a copy of rebar (without prompt)
 
@@ -51,10 +55,6 @@ jobs:  # basic units of work in a run
       - run:  # special utility that stalls main process until DB is ready
           name: Wait for DB
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
-
-      - run:
-          name: Create blank test config file
-          command: touch config/test.secret.exs
 
       - run: mix format --check-formatted
 
