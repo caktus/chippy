@@ -12,7 +12,7 @@
       <section class="container">
         <nav role="navigation">
           <ul>
-            <li><a href="/">Home</a></li>
+            <li><a href="/"><%= @conn.req_cookies["user_id"] %></a></li>
           </ul>
         </nav>
         <a href="/">

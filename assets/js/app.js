@@ -19,6 +19,11 @@ import "phoenix_html";
 // Import local files
 //
 import socket from "./socket";
+import {getCookie, setCookie, deleteCookie, uuidv4} from "./cookie";
+
+if (!getCookie('user_id')) {
+  setCookie('user_id', uuidv4());
+}
 
 const initializeApp = () => {
   const sprintBoard = document.getElementById("sprint-board");
