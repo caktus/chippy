@@ -20,7 +20,7 @@ jobs:  # basic units of work in a run
 
       - run:
           name: Create blank test config file
-          command: touch config/test.secret.exs
+          command: echo -e > config/test.secret.exs
 
       - run: mix local.hex --force  # install Hex locally (without prompt)
       - run: mix local.rebar --force  # fetch a copy of rebar (without prompt)
