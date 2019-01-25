@@ -26,7 +26,7 @@ defmodule ChippyWeb.PageController do
   # NOTE: pretty much immediately I'm going to want to replace
   # this with a React view, now that I'm thinking about it ...
   def sprint(conn, %{"sid" => sprint_id}) do
-    pid_or_nil = sprint_id |> SprintServer.via_tuple |> GenServer.whereis
+    pid_or_nil = sprint_id |> SprintServer.via_tuple() |> GenServer.whereis()
 
     case pid_or_nil do
       pid when is_pid(pid) ->
@@ -34,6 +34,7 @@ defmodule ChippyWeb.PageController do
         |> assign(:by_users, SprintServer.display_by_users(sprint_id))
         # TODO: do something with :by_users value?
         |> render("sprint.html")
+
       nil ->
         conn
         |> put_flash(:error, "Sprint not found.")
