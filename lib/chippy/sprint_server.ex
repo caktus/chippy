@@ -18,6 +18,10 @@ defmodule Chippy.SprintServer do
     GenServer.call(via_tuple(sprint_name), {:display_by_users})
   end
 
+  def sprint_pid(sprint_name) do
+    sprint_name |> via_tuple |> GenServer.whereis()
+  end
+
   # Server callbacks
 
   def init(project_names) do

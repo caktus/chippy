@@ -103,3 +103,9 @@
     </div>
   </div>
 </section>
+
+<script type="text/json" id="sprint_config">
+ {
+   "sid": "<%= @sid %>"
+ }
+</script>
