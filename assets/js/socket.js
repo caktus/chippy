@@ -54,18 +54,4 @@ let socket = new Socket("/socket", {params: {token: window.userToken}})
 // Finally, connect to the socket:
 socket.connect()
 
-const sprintConfigEl = document.getElementById('sprint_config')
-
-if (sprintConfigEl) {
-  const sprintConfig = JSON.parse(sprintConfigEl.text)
-  if (sprintConfig.sid) {
-    // Now that you are connected, you can join channels with a topic:
-    let channel = socket.channel(`sprint:${sprintConfig.sid}`, {})
-    channel.join()
-      .receive("ok", resp => { console.log("Joined successfully", resp) })
-      .receive("error", resp => { console.log("Unable to join", resp) })
-    channel.on("by_users", console.log)
-  }
-}
-
 export default socket
