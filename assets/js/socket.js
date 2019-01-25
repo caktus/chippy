@@ -64,6 +64,7 @@ if (sprintConfigEl) {
     channel.join()
       .receive("ok", resp => { console.log("Joined successfully", resp) })
       .receive("error", resp => { console.log("Unable to join", resp) })
+    channel.on("by_users", console.log)
   }
 }
 
