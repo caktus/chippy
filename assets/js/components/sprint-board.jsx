@@ -1,7 +1,6 @@
 import React from "react";
 import { chain, sortBy, times } from "lodash";
-
-const THE_ONLY_USER_THUS_FAR = "nmashton";
+import { getCookie } from "../cookie";
 
 const Project = ({ name, alloc, addChip, removeChip }) => (
   <div className="row">
@@ -84,14 +83,14 @@ class SprintBoard extends React.Component {
   addChipTo = projectName => () => {
     this.state.channel.push("add_chip", {
       project_name: projectName,
-      person_name: THE_ONLY_USER_THUS_FAR
+      person_name: getCookie("user_id")
     });
   };
 
   removeChipFrom = projectName => () => {
     this.state.channel.push("remove_chip", {
       project_name: projectName,
-      person_name: THE_ONLY_USER_THUS_FAR
+      person_name: getCookie("user_id")
     });
   };
 

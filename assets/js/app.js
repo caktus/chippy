@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import RandomNames from "random-human-name";
 
 import SprintBoard from "./components/sprint-board.jsx";
 
@@ -19,10 +20,11 @@ import "phoenix_html";
 // Import local files
 //
 import socket from "./socket";
-import {getCookie, setCookie, deleteCookie, uuidv4} from "./cookie";
+import {getCookie, setCookie, deleteCookie} from "./cookie";
 
 if (!getCookie('user_id')) {
-  setCookie('user_id', uuidv4());
+  // FIXME: set this back to uuidv4() when we implement name customization
+  setCookie('user_id', RandomNames.RandomNames(1)[0]);
 }
 
 const initializeApp = () => {
