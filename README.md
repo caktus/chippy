@@ -12,7 +12,7 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 ## Deployment
 
 Chippy is deployed to Caktus' [Dokku](http://dokku.viewdocs.io/dokku/) infrastructure. This document assumes that
-you have are familiar with Caktus' [Dokku Developer Docs](https://caktus.github.io/developer-documentation/dokku.html)
+you are familiar with Caktus' [Dokku Developer Docs](https://caktus.github.io/developer-documentation/dokku.html)
 and have an account on the Dokku server.
 
 Create a new app:
