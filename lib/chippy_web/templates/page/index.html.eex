@@ -6,7 +6,11 @@
 
 <section class="row">
   <ul>
-    <li>Start a new sprint</li>
+    <li>
+      <a href="<%= Routes.page_path(@conn, :new) %>">
+        Start a new sprint
+      </a>
+    </li>
     <li>Join an existing sprint</li>
   </ul>
 </section>

@@ -1,9 +1,24 @@
 defmodule ChippyWeb.PageController do
   use ChippyWeb, :controller
 
-  alias Chippy.Sprint
+  alias Chippy.{Sprint, SprintSupervisor}
 
   def index(conn, _params) do
+    render(conn, "index.html")
+  end
+
+  def new(conn, _params) do
+    random_name = :crypto.strong_rand_bytes(8) |> Base.url_encode64 |> binary_part(0, 8)
+
+    case SprintSupervisor.start_sprint(random_name, []) do
+      {:ok, _pid} ->
+        redirect(conn, to: Routes.page_path(conn, :sprint, random_name))
+      {:error, _error} ->
+        conn
+        |> put_flash(:error, "Error! Error!!")
+        |> redirect(to: Routes.page_path(conn, :new))
+    end
+
     render(conn, "index.html")
   end
 
