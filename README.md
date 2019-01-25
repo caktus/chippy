@@ -15,14 +15,14 @@ Chippy is deployed to Caktus' [Dokku](http://dokku.viewdocs.io/dokku/) infrastru
 you have are familiar with Caktus' [Dokku Developer Docs](https://caktus.github.io/developer-documentation/dokku.html)
 and have an account on the Dokku server.
 
-Create a new app::
+Create a new app:
 
 ```
    $ ssh dokku apps:create {{ project_name }}
    Creating {{ project_name }}... done
 ```
 
-Create and link the database::
+Create and link the database:
 
 ```
     $ ssh dokku postgres:create {{ project_name }}-database
@@ -31,14 +31,14 @@ Create and link the database::
     ...
 ```
 
-Set required environment variables::
+Set required environment variables:
 
 ```
     $ ssh dokku config:set {{ project_name }} HOSTNAME={{ project_name }}.caktustest.net
     $ ssh dokku config:set {{ project_name }} SECRET_KEY_BASE=<64char string>
 ```
 
-Configure SSL via the Let's Encrypt Plugin::
+Configure SSL via the Let's Encrypt Plugin:
 
 ```
     $ ssh dokku config:set --no-restart {{ project_name }} DOKKU_LETSENCRYPT_EMAIL=your@email.tld
@@ -53,7 +53,7 @@ Configure the Git repository and deploy!
     $ git push dokku master
 ```
 
-If you want to deploy a branch::
+If you want to deploy a branch:
 
 ```
     $ git push dokku <branch-name>:master
