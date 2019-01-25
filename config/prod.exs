@@ -12,7 +12,10 @@ use Mix.Config
 
 config :chippy, ChippyWeb.Endpoint,
   http: [:inet6, port: System.get_env("PORT") || 4000],
-  url: [host: System.get_env("HOSTNAME") || "example.com", port: System.get_env("EXTERNAL_PORT") || 80],
+  url: [
+    host: System.get_env("HOSTNAME") || "example.com",
+    port: System.get_env("EXTERNAL_PORT") || 80
+  ],
   cache_static_manifest: "priv/static/cache_manifest.json",
   secret_key_base: System.get_env("SECRET_KEY_BASE")
 
