@@ -39,11 +39,11 @@ defmodule Chippy.Sprint do
     %Sprint{project_allocations: %{"Bar" => %{}, "Foo" => %{"nmashton" => 3}}}
   """
   def add_chips(
-    %Sprint{project_allocations: project_allocations} = sprint,
-    project_name,
-    person_name,
-    chip_count
-  ) do
+        %Sprint{project_allocations: project_allocations} = sprint,
+        project_name,
+        person_name,
+        chip_count
+      ) do
     new_project_allocations =
       project_allocations
       |> Map.update(project_name, %{}, &add_chips_to_project(&1, person_name, chip_count))
@@ -88,21 +88,21 @@ defmodule Chippy.Sprint do
     Map.merge(
       alloc1,
       alloc2,
-      fn (_k, proj1, proj2) ->
+      fn _k, proj1, proj2 ->
         Map.merge(
           proj1,
           proj2,
-          fn (_k, v1, v2) -> v1 + v2 end
-          )
-        end
-      )
+          fn _k, v1, v2 -> v1 + v2 end
+        )
+      end
+    )
   end
 
   def merge_allocs_for_project({project_name, project_allocs}, allocs_by_person) do
     project_allocs_by_person =
       project_allocs
-      |> Enum.map(fn({person_name, count}) -> %{person_name => %{project_name => count}} end)
-    
+      |> Enum.map(fn {person_name, count} -> %{person_name => %{project_name => count}} end)
+
     Enum.reduce(
       project_allocs_by_person,
       allocs_by_person,
@@ -123,9 +123,9 @@ defmodule Chippy.Sprint do
   """
   def display_by_users(sprint) do
     sprint.project_allocations
-      |> Enum.reduce(
-        %{},
-        &Sprint.merge_allocs_for_project/2
-      )
+    |> Enum.reduce(
+      %{},
+      &Sprint.merge_allocs_for_project/2
+    )
   end
 end
