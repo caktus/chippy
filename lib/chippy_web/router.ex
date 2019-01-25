@@ -17,6 +17,7 @@ defmodule ChippyWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/new", PageController, :new
     get "/s/:sid", PageController, :sprint
   end
 
