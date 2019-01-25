@@ -15,7 +15,7 @@ defmodule Chippy.Application do
       # Starts a worker by calling: Chippy.Worker.start_link(arg)
       # {Chippy.Worker, arg},
       {Registry, keys: :unique, name: :sprint_registry},
-      Chippy.SprintSupervisor,
+      Chippy.SprintSupervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

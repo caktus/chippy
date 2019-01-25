@@ -10,12 +10,11 @@ defmodule SprintSupervisorTest do
     projects = ["CMG", "Mind My Health"]
 
     assert {:ok, pid} = SprintSupervisor.start_sprint(sprint_name, projects)
-    assert (
-      sprint_name
-      |> SprintServer.via_tuple
-      |> GenServer.whereis
-      |> Process.alive?
-    )
+
+    assert sprint_name
+           |> SprintServer.via_tuple()
+           |> GenServer.whereis()
+           |> Process.alive?()
   end
 
   test "kills a sprint process" do
@@ -26,10 +25,9 @@ defmodule SprintSupervisorTest do
 
     assert {:ok, pid} = SprintSupervisor.start_sprint(sprint_name, projects)
     assert :ok = SprintSupervisor.stop_sprint(sprint_name)
-    refute (
-      sprint_name
-      |> SprintServer.via_tuple
-      |> GenServer.whereis
-    )
+
+    refute sprint_name
+           |> SprintServer.via_tuple()
+           |> GenServer.whereis()
   end
 end

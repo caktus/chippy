@@ -46,7 +46,11 @@ defmodule Chippy.Sprint do
       ) do
     new_project_allocations =
       project_allocations
-      |> Map.update(project_name, %{person_name => chip_count}, &add_chips_to_project(&1, person_name, chip_count))
+      |> Map.update(
+        project_name,
+        %{person_name => chip_count},
+        &add_chips_to_project(&1, person_name, chip_count)
+      )
 
     %Sprint{sprint | project_allocations: new_project_allocations}
   end
