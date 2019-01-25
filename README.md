@@ -18,8 +18,8 @@ and have an account on the Dokku server.
 Create a new app::
 
 ```
-   $ ssh dokku apps:create chippy
-   Creating chippy... done
+   $ ssh dokku apps:create {{ project_name }}
+   Creating {{ project_name }}... done
 ```
 
 Create and link the database::
@@ -34,8 +34,8 @@ Create and link the database::
 Set required environment variables::
 
 ```
-    $ ssh dokku config:set chippy HOSTNAME=chippy.caktustest.net
-    $ ssh dokku config:set chippy SECRET_KEY_BASE=<64char string>
+    $ ssh dokku config:set {{ project_name }} HOSTNAME={{ project_name }}.caktustest.net
+    $ ssh dokku config:set {{ project_name }} SECRET_KEY_BASE=<64char string>
 ```
 
 Configure SSL via the Let's Encrypt Plugin::
