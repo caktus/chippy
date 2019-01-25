@@ -19,7 +19,7 @@ defmodule Chippy.SprintServer do
   end
 
   def sprint_pid(sprint_name) do
-    sprint_name |> via_tuple |> GenServer.whereis
+    sprint_name |> via_tuple |> GenServer.whereis()
   end
 
   # Server callbacks
