@@ -3,7 +3,7 @@ defmodule Chippy.SprintServer do
 
   alias Chippy.Sprint
 
-  @timeout :timer.minutes(5)
+  @timeout :timer.minutes(120)
 
   def start_link(sprint_name, project_names) do
     GenServer.start_link(__MODULE__, project_names, name: via_tuple(sprint_name))
