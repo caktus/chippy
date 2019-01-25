@@ -13,6 +13,11 @@ defmodule Chippy.SprintServer do
     {:via, Registry, {:sprint_registry, sprint_name}}
   end
 
+  # Methods
+  def display_by_users(sprint_name) do
+    GenServer.call(via_tuple(sprint_name), {:display_by_users})
+  end
+
   # Server callbacks
 
   def init(project_names) do
@@ -29,6 +34,10 @@ defmodule Chippy.SprintServer do
   def handle_call({:remove_chip, project_name, person_name}, _from, sprint) do
     new_sprint = Sprint.remove_chips(sprint, project_name, person_name, 1)
     {:reply, new_sprint, new_sprint, @timeout}
+  end
+
+  def handle_call({:display_by_users}, _from, sprint) do
+    {:reply, Sprint.display_by_users(sprint), sprint, @timeout}
   end
 
   def handle_info(:timeout, sprint) do
