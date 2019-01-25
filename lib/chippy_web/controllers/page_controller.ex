@@ -19,8 +19,6 @@ defmodule ChippyWeb.PageController do
         |> put_flash(:error, "Error! Error!!")
         |> redirect(to: Routes.page_path(conn, :new))
     end
-
-    render(conn, "index.html")
   end
 
   # NOTE: pretty much immediately I'm going to want to replace

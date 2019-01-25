@@ -1,7 +1,7 @@
 import React from "react";
 import { chain, has, keys, sortBy, times } from "lodash";
-import { getCookie } from "../cookie";
 import colorHash from "color-hash";
+import getUserName from "../user";
 
 const hasher = new colorHash();
 
@@ -112,14 +112,14 @@ class SprintBoard extends React.Component {
   addChipTo = projectName => () => {
     this.state.channel.push("add_chip", {
       project_name: projectName,
-      person_name: getCookie("user_id")
+      person_name: getUserName()
     });
   };
 
   removeChipFrom = projectName => () => {
     this.state.channel.push("remove_chip", {
       project_name: projectName,
-      person_name: getCookie("user_id")
+      person_name: getUserName()
     });
   };
 
