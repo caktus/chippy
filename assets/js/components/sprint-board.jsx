@@ -1,8 +1,11 @@
 import React from "react";
-import { chain, sortBy, times } from "lodash";
+import { chain, has, keys, sortBy, times } from "lodash";
 import { getCookie } from "../cookie";
+import colorHash from "color-hash";
 
-const Project = ({ name, alloc, addChip, removeChip }) => (
+const hasher = new colorHash();
+
+const Project = ({ name, alloc, colors, addChip, removeChip }) => (
   <div className="row">
     <div className="column column-20">
       <div className="row">{name}</div>
@@ -19,10 +22,15 @@ const Project = ({ name, alloc, addChip, removeChip }) => (
       </div>
     </div>
     <div className="column column-80">
-      {alloc.map(([user, chips]) => (
-        <div className="row">
+      {alloc.map(([name, chips]) => (
+        <div className="row row-chips">
           {times(chips, () => (
-            <span className="chip user-1" />
+            <span
+              className="chip"
+              style={{
+                backgroundColor: colors[name] || "steelblue"
+              }}
+            />
           ))}
         </div>
       ))}
@@ -37,7 +45,8 @@ class SprintBoard extends React.Component {
       channel: null,
       channelError: null,
       newProjectName: "",
-      sprintData: {}
+      sprintData: {},
+      colors: {}
     };
   }
 
@@ -47,8 +56,28 @@ class SprintBoard extends React.Component {
 
   onDisplay = resp => {
     console.log("Display data received:", resp);
-    this.setState({
-      sprintData: resp
+    this.setState((state, props) => {
+      const { project_allocations } = resp;
+      const colors = chain(project_allocations)
+        .values()
+        .map(keys)
+        .flatten()
+        .uniq()
+        .reduce(
+          (acc, name) =>
+            Object.assign(
+              {},
+              acc,
+              has(acc, name) ? {} : { [name]: hasher.hex(name) }
+            ),
+          Object.assign({}, state.colors)
+        )
+        .value();
+      console.log(colors);
+      return {
+        sprintData: resp,
+        colors
+      };
     });
   };
 
@@ -98,8 +127,8 @@ class SprintBoard extends React.Component {
     const projects = chain(
       Object.entries(this.state.sprintData.project_allocations || {})
     )
-      .sortBy(([k, v]) => k)
-      .map(([k, v]) => [k, sortBy(Object.entries(v), ([k, v]) => k)])
+      .sortBy(([k, _]) => k)
+      .map(([k, v]) => [k, sortBy(Object.entries(v), ([k, _]) => k)])
       .value();
 
     return (
@@ -109,6 +138,7 @@ class SprintBoard extends React.Component {
             key={name}
             name={name}
             alloc={alloc}
+            colors={this.state.colors}
             addChip={this.addChipTo(name)}
             removeChip={this.removeChipFrom(name)}
           />

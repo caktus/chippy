@@ -12,6 +12,10 @@
   margin: 3px;
 }
 
+.row-chips {
+  flex-wrap: wrap;
+}
+
 .user-1 { background-color: #A8DBFF; }
 .user-2 { background-color: #FFD2CC; }
 .user-3 { background-color: #FFCCF0; }
