@@ -1,7 +1,7 @@
 import React from "react";
 import { chain, has, keys, sortBy, times } from "lodash";
 import colorHash from "color-hash";
-import getUserName from "../user";
+import { getUserName } from "../user";
 
 const hasher = new colorHash();
 
