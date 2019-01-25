@@ -12,5 +12,10 @@
       </a>
     </li>
     <li>Join an existing sprint</li>
+    <ul>
+    <%= for key <- @sprints do %>
+        <li><a href="/s/<%= key %>">Sprint <%= key %></a></li>
+    <% end %>
+    </ul>
   </ul>
 </section>
