@@ -17,6 +17,7 @@ defmodule ChippyWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/s/:sid", PageController, :sprint
   end
 
   # Other scopes may use custom stacks.
