@@ -1,3 +1,41 @@
 /* This file is for your main application css. */
 
 @import "./phoenix.css";
+
+
+.chip {
+  height: 25px;
+  width: 25px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 3px;
+}
+
+.user-1 { background-color: #A8DBFF; }
+.user-2 { background-color: #FFD2CC; }
+.user-3 { background-color: #FFCCF0; }
+.user-4 { background-color: #FFC580; }
+.user-5 { background-color: #B3FFDA; }
+.user-6 { background-color: #E6FF94; }
+.user-7 { background-color: #9EFFD2; }
+.user-8 { background-color: #FFCF8A; }
+
+section.chips>.row {
+	border-bottom: 1px solid #eee;
+	margin-bottom: 10px;
+}
+
+section.chips>.row>.column {
+  margin-right: 10px;
+}
+
+.button-small {
+  font-size: 2rem;
+  height: 2.8rem;
+  line-height: 1rem;
+  padding: 0px;
+  margin: 0 0.5rem;
+  width: 2.8rem;
+  text-align: center;
+}
