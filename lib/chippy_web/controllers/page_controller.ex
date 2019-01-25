@@ -4,9 +4,10 @@ defmodule ChippyWeb.PageController do
   alias Chippy.{Sprint, SprintServer, SprintSupervisor}
 
   def index(conn, _params) do
-    sprints = Supervisor.which_children(Chippy.SprintSupervisor) \
-    |> Enum.map(fn ({_, pid, _, _}) -> pid end) \
-    |> Enum.map(fn (pid) -> Registry.keys(:sprint_registry, pid) end) \
+    sprints =
+      Supervisor.which_children(Chippy.SprintSupervisor)
+      |> Enum.map(fn {_, pid, _, _} -> pid end)
+      |> Enum.map(fn pid -> Registry.keys(:sprint_registry, pid) end)
 
     conn
     |> assign(:sprints, sprints)
