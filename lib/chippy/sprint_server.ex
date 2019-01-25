@@ -14,6 +14,18 @@ defmodule Chippy.SprintServer do
   end
 
   # Methods
+  def add_project(sprint_name, project_name) do
+    sprint_name
+    |> via_tuple
+    |> GenServer.call({:add_project, project_name})
+  end
+
+  def display(sprint_name) do
+    sprint_name
+    |> via_tuple
+    |> GenServer.call({:display})
+  end
+
   def display_by_users(sprint_name) do
     GenServer.call(via_tuple(sprint_name), {:display_by_users})
   end
@@ -30,6 +42,11 @@ defmodule Chippy.SprintServer do
     {:ok, sprint, @timeout}
   end
 
+  def handle_call({:add_project, project_name}, _from, sprint) do
+    new_sprint = Sprint.add_project(sprint, project_name)
+    {:reply, new_sprint, new_sprint, @timeout}
+  end
+
   def handle_call({:add_chip, project_name, person_name}, _from, sprint) do
     new_sprint = Sprint.add_chips(sprint, project_name, person_name, 1)
     {:reply, new_sprint, new_sprint, @timeout}
@@ -38,6 +55,10 @@ defmodule Chippy.SprintServer do
   def handle_call({:remove_chip, project_name, person_name}, _from, sprint) do
     new_sprint = Sprint.remove_chips(sprint, project_name, person_name, 1)
     {:reply, new_sprint, new_sprint, @timeout}
+  end
+
+  def handle_call({:display}, _from, sprint) do
+    {:reply, sprint, sprint, @timeout}
   end
 
   def handle_call({:display_by_users}, _from, sprint) do

@@ -1,4 +1,5 @@
 defmodule Chippy.Sprint do
+  @derive Jason.Encoder
   defstruct project_allocations: %{}
 
   alias Chippy.Sprint
@@ -14,6 +15,18 @@ defmodule Chippy.Sprint do
 
     %Sprint{
       project_allocations: project_allocations
+    }
+  end
+
+  @doc """
+  Adds a new empty project to a sprint.
+
+    iex> Sprint.new([]) |> Sprint.add_project("Foo")
+    %Sprint{project_allocations: %{"Foo" => %{}}}
+  """
+  def add_project(sprint, project_name) do
+    %Sprint{
+      project_allocations: Map.put(sprint.project_allocations, project_name, %{})
     }
   end
 

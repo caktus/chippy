@@ -15,10 +15,24 @@ defmodule ChippyWeb.SprintChannel do
   end
 
   def handle_info({:joined, sid}, socket) do
-    by_users = SprintServer.display_by_users(sid)
+    display = SprintServer.display(sid)
 
-    push(socket, "by_users", by_users)
+    push(socket, "display", display)
 
     {:noreply, socket}
+  end
+
+  def handle_in("new_project", %{"project_name" => project_name}, socket) do
+    "sprint:" <> sid = socket.topic
+
+    case SprintServer.sprint_pid(sid) do
+      pid when is_pid(pid) ->
+        new_sprint = SprintServer.add_project(sid, project_name)
+        broadcast!(socket, "display", new_sprint)
+        {:noreply, socket}
+
+      nil ->
+        {:noreply, "Sprint not found"}
+    end
   end
 end
