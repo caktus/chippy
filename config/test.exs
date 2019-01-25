@@ -13,3 +13,6 @@ config :logger, level: :warn
 config :chippy, Chippy.Repo,
   url: System.get_env("DATABASE_URL") || "postgres://postgres:postgres@localhost/chippy_test",
   pool: Ecto.Adapters.SQL.Sandbox
+
+# Allow config to be overriden locally
+import_config "test.secret.exs"
