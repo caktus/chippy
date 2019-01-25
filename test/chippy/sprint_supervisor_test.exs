@@ -20,7 +20,7 @@ defmodule SprintSupervisorTest do
   test "kills a sprint process" do
     SprintSupervisor.start_link(:ok)
 
-    sprint_name = "scarlet_crown_sprint_123"
+    sprint_name = "scarlet_crown_sprint_456"
     projects = ["CMG", "Mind My Health"]
 
     assert {:ok, pid} = SprintSupervisor.start_sprint(sprint_name, projects)
