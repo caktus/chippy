@@ -6,7 +6,7 @@ import { getUserName } from "../user";
 const hasher = new colorHash();
 
 const Project = ({ name, alloc, colors, addChip, removeChip }) => (
-  <div className="row">
+  <div className="row project">
     <div className="column column-20">
       <div className="row">{name}</div>
       <div className="row">

@@ -25,6 +25,15 @@
       <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
       <%= render @view_module, @view_template, assigns %>
     </main>
+    <footer>
+      <section class="container">
+        <p>
+          Chippy is built using <a href="https://elixir-lang.org/" target="_blank">Elixir</a>,
+          on top of <a href="https://phoenixframework.org/" target="_blank">Phoenix</a>,
+          and shipped by <a href="https://caktusgroup.com/" target="_blank">Caktus Group</a>.
+        </p>
+      </section>
+    </footer>
     <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>
