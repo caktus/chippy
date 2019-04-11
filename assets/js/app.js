@@ -1,8 +1,3 @@
-import React from "react";
-import ReactDOM from "react-dom";
-
-import SprintBoard from "./components/sprint-board.jsx";
-
 // We need to import the CSS so that webpack will load it.
 // The MiniCssExtractPlugin is used to separate it out into
 // its own CSS file.
@@ -18,24 +13,15 @@ import "phoenix_html";
 
 // Import local files
 //
-import socket from "./socket";
+import LiveSocket from "phoenix_live_view";
 import { getUserName } from "./user";
 
 const initializeApp = () => {
   // Assign ourselves a username, if needed, and make sure it appears in the header
-  getUserName();
-
-  const sprintBoard = document.getElementById("sprint-board");
-  const sprintConfigEl = document.getElementById("sprint_config");
-
-  if (sprintBoard && sprintConfigEl) {
-    console.log("Starting ...");
-    const {sid} = JSON.parse(sprintConfigEl.text);
-    ReactDOM.render(
-      <SprintBoard socket={socket} sid={sid} />,
-      document.getElementById("sprint-board")
-    );
-  }
+  const userName = getUserName();
+  const liveSocket = new LiveSocket("/live");
+  liveSocket.connect();
+  console.log(`Hi, ${userName}! Eventually we'll do something with the name you chose … maybe?`);
 };
 
 if (window.addEventListener) {

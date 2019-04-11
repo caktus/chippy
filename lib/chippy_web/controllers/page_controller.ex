@@ -2,6 +2,7 @@ defmodule ChippyWeb.PageController do
   use ChippyWeb, :controller
 
   alias Chippy.{SprintServer, SprintSupervisor}
+  alias Phoenix.LiveView
 
   def index(conn, _params) do
     sprints =
@@ -28,9 +29,11 @@ defmodule ChippyWeb.PageController do
     end
   end
 
-  # NOTE: pretty much immediately I'm going to want to replace
-  # this with a React view, now that I'm thinking about it ...
-  def sprint(conn, %{"sid" => sprint_id}) do
+  def sprint(conn, _vars) do
+    conn |> LiveView.Controller.live_render(ChippyWeb.SprintLive, session: %{})
+  end
+
+  def _old_sprint(conn, %{"sid" => sprint_id}) do
     pid_or_nil = sprint_id |> SprintServer.via_tuple() |> GenServer.whereis()
 
     case pid_or_nil do
