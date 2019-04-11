@@ -1,7 +1,7 @@
 defmodule ChippyWeb.PageController do
   use ChippyWeb, :controller
 
-  alias Chippy.{Sprint, SprintServer, SprintSupervisor}
+  alias Chippy.{SprintServer, SprintSupervisor}
 
   def index(conn, _params) do
     sprints =
