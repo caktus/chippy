@@ -29,21 +29,19 @@ defmodule ChippyWeb.PageController do
     end
   end
 
-  def sprint(conn, _vars) do
-    conn |> LiveView.Controller.live_render(ChippyWeb.SprintLive, session: %{})
-  end
-
-  def _old_sprint(conn, %{"sid" => sprint_id}) do
+  def sprint(conn, %{"sid" => sprint_id}) do
     pid_or_nil = sprint_id |> SprintServer.via_tuple() |> GenServer.whereis()
 
     case pid_or_nil do
       pid when is_pid(pid) ->
-        conn
-        |> assign(:by_users, SprintServer.display_by_users(sprint_id))
-        |> assign(:sid, sprint_id)
-        # TODO: do something with :by_users value?
-        |> render("sprint.html")
-
+        LiveView.Controller.live_render(
+          conn,
+          ChippyWeb.SprintLive,
+          session: %{
+            sprint_id: sprint_id,
+            by_users: SprintServer.display_by_users(sprint_id)
+          }
+        )
       nil ->
         conn
         |> put_flash(:error, "Sprint not found.")
