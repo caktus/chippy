@@ -15,7 +15,10 @@ config :chippy, ChippyWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "ZjS5E1330qBwwf/FXn1ZJ3XBYOQYw6R7jU7HyNBl6JKRfwdZ+Me9FHpHGalqtszr",
   render_errors: [view: ChippyWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Chippy.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Chippy.PubSub, adapter: Phoenix.PubSub.PG2],
+  live_view: [
+    signing_salt: "f+vbVpQNIOm++4C/33LWT0Qq+aWj2Etu"
+  ]
 
 # Configures Elixir's Logger
 config :logger, :console,
