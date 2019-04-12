@@ -2,7 +2,9 @@ defmodule ChippyWeb.SprintLive.Show do
   use Phoenix.LiveView
 
   alias Phoenix.PubSub
+  alias Phoenix.Socket.Broadcast
   alias Chippy.{SprintServer}
+  alias ChippyWeb.Presence
   alias ChippyWeb.Router.Helpers, as: Routes
 
   def render(assigns) do
@@ -15,6 +17,8 @@ defmodule ChippyWeb.SprintLive.Show do
     case pid_or_nil do
       pid when is_pid(pid) ->
         PubSub.subscribe(Chippy.PubSub, "sprint:" <> sprint_id)
+        PubSub.subscribe(Chippy.PubSub, "users:" <> sprint_id)
+        Presence.track(self(), "users:" <> sprint_id, user_id, %{})
 
         {:ok,
          assign(socket, %{
@@ -23,7 +27,8 @@ defmodule ChippyWeb.SprintLive.Show do
            your_name: user_id,
            name_taken: false,
            errors: "",
-           project_name: ""
+           project_name: "",
+           online_users: Presence.list("users:" <> sprint_id)
          })}
 
       nil ->
@@ -80,5 +85,12 @@ defmodule ChippyWeb.SprintLive.Show do
 
   def handle_info({:sprints, :update, new_sprint}, socket) do
     {:noreply, assign(socket, sprint: new_sprint)}
+  end
+
+  def handle_info(
+        %Broadcast{event: "presence_diff"},
+        %{assigns: %{sprint_id: sprint_id}} = socket
+      ) do
+    {:noreply, assign(socket, online_users: Presence.list("users:" <> sprint_id))}
   end
 end

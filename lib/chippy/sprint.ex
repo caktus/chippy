@@ -176,6 +176,10 @@ defmodule Chippy.Sprint do
     |> Enum.sort()
   end
 
+  def user_chip_count(sprint, user_name) do
+    Sprint.display_by_users(sprint) |> Map.get(user_name, %{}) |> Map.values() |> Enum.sum()
+  end
+
   @doc """
   Returns the projects for a sprint, sorted alphabetically.
 
