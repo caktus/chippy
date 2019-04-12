@@ -1,9 +1,5 @@
 <% alias Chippy.Sprint %>
 
-<div>
-  Hello world! This is sprint "<%= @sprint_id %>". Your name is <b><%= URI.decode @your_name %></b>.
-</div>
-
 <section class="chips">
   <%= for {project_name, allocation} <- Sprint.sorted_allocations(@sprint) do %>
     <div class="row project">
@@ -44,7 +40,9 @@
       </div>
       <div class="column column-20">
         <div class="row">
-          <button>
+          <button
+            <%= if @project_name == "", do: "disabled", else: "" %>
+          >
             Add project
           </button>
         </div>

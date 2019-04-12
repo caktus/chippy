@@ -15,17 +15,17 @@ defmodule ChippyWeb.SprintLive.Show do
     case pid_or_nil do
       pid when is_pid(pid) ->
         PubSub.subscribe(Chippy.PubSub, "sprint:" <> sprint_id)
-        new_sock =
-          socket
-          |> assign(sprint_id: sprint_id)
-          |> assign(sprint: SprintServer.display(sprint_id))
-          |> assign(your_name: user_id)
-          |> assign(your_color: user_color)
-          |> assign(name_taken: false)
-          |> assign(errors: "")
-          |> assign(project_name: "")
 
-        {:ok, new_sock}
+        {:ok,
+         assign(socket, %{
+           sprint_id: sprint_id,
+           sprint: SprintServer.display(sprint_id),
+           your_name: user_id,
+           your_color: user_color,
+           name_taken: false,
+           errors: "",
+           project_name: ""
+         })}
 
       nil ->
         {:stop,
@@ -40,7 +40,11 @@ defmodule ChippyWeb.SprintLive.Show do
         %{"project_name" => project_name},
         %{assigns: %{sprint_id: sprint_id}} = socket
       ) do
-    {:noreply, assign(socket, name_taken: SprintServer.has_project?(sprint_id, project_name))}
+    {:noreply,
+     assign(socket,
+       project_name: project_name,
+       name_taken: SprintServer.has_project?(sprint_id, project_name)
+     )}
   end
 
   def handle_event(
@@ -49,8 +53,7 @@ defmodule ChippyWeb.SprintLive.Show do
         %{assigns: %{sprint_id: sprint_id}} = socket
       ) do
     new_sprint = SprintServer.add_project(sprint_id, project_name)
-    PubSub.broadcast(Chippy.PubSub, "sprint:" <> sprint_id, {:sprints, :update, new_sprint})
-    {:noreply, assign(socket, sprint: new_sprint)}
+    update_sprint(sprint_id, new_sprint, socket)
   end
 
   def handle_event(
@@ -59,8 +62,7 @@ defmodule ChippyWeb.SprintLive.Show do
         %{assigns: %{sprint_id: sprint_id, your_name: person_name}} = socket
       ) do
     new_sprint = SprintServer.add_chip(sprint_id, project_name, person_name)
-    PubSub.broadcast(Chippy.PubSub, "sprint:" <> sprint_id, {:sprints, :update, new_sprint})
-    {:noreply, assign(socket, sprint: new_sprint)}
+    update_sprint(sprint_id, new_sprint, socket)
   end
 
   def handle_event(
@@ -69,6 +71,10 @@ defmodule ChippyWeb.SprintLive.Show do
         %{assigns: %{sprint_id: sprint_id, your_name: person_name}} = socket
       ) do
     new_sprint = SprintServer.remove_chip(sprint_id, project_name, person_name)
+    update_sprint(sprint_id, new_sprint, socket)
+  end
+
+  def update_sprint(sprint_id, new_sprint, socket) do
     PubSub.broadcast(Chippy.PubSub, "sprint:" <> sprint_id, {:sprints, :update, new_sprint})
     {:noreply, assign(socket, sprint: new_sprint)}
   end
