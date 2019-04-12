@@ -18,7 +18,7 @@
         <%= for {name, chips} <- allocation do %>
           <div class="row row-chips">
             <%= for _i <- 1..chips do %>
-              <span class="chip" style="background-color: <%= Colorify.hex name %>"></span>
+              <span class="chip" style="background-color: <%= Colorify.hex name %>" title="<%= name %>"></span>
             <% end %>
           </div>
         <% end %>
