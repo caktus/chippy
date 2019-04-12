@@ -21,6 +21,7 @@ defmodule ChippyWeb.Router do
     get "/", PageController, :index
     get "/new", PageController, :new
     
+    live "/sprint/new", SprintLive.New
     live "/s/:sid", SprintLive
   end
 
