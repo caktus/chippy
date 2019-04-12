@@ -29,14 +29,20 @@ defmodule ChippyWeb.PageController do
   end
 
   def sprint(conn, %{"sid" => sprint_id}) do
-    LiveController.live_render(
-      conn,
-      ChippyWeb.SprintLive.Show,
-      session: %{
-        user_id: get_session(conn, :user_id),
-        user_color: get_session(conn, :user_color),
-        sprint_id: sprint_id
-      }
-    )
+    case get_session(conn, :user_id) do
+      user_id when user_id != nil ->
+        LiveController.live_render(
+          conn,
+          ChippyWeb.SprintLive.Show,
+          session: %{
+            user_id: user_id,
+            sprint_id: sprint_id
+          }
+        )
+      _ ->
+        conn
+        |> put_flash(:error, "Please set a user name before accessing a sprint.")
+        |> redirect(to: Routes.page_path(conn, :profile))
+    end
   end
 end
