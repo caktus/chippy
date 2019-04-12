@@ -30,7 +30,7 @@ section.chips>.project {
 	margin-bottom: 10px;
 }
 
-section.chips>.row>.column {
+section.chips>form>.row>.column {
   margin-right: 10px;
 }
 
