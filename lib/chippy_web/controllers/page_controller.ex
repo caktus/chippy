@@ -1,5 +1,6 @@
 defmodule ChippyWeb.PageController do
   use ChippyWeb, :controller
+  alias Phoenix.LiveView.Controller, as: LiveController
   
   alias Chippy.{SprintServer, SprintSupervisor}
   alias ChippyWeb.Router.Helpers, as: Routes
@@ -15,17 +16,15 @@ defmodule ChippyWeb.PageController do
     |> render("index.html")
   end
 
-  def new(conn, _params) do
-    random_name = :crypto.strong_rand_bytes(8) |> Base.url_encode64() |> binary_part(0, 8)
-
-    case SprintSupervisor.start_sprint(random_name, []) do
-      {:ok, _pid} ->
-        redirect(conn, to: Routes.live_path(ChippyWeb.Endpoint, ChippyWeb.SprintLive, random_name))
-
-      {:error, _error} ->
-        conn
-        |> put_flash(:error, "Error! Error!!")
-        |> redirect(to: Routes.page_path(conn, :new))
-    end
+  def sprint(conn, %{"sid" => sprint_id}) do
+    LiveController.live_render(
+      conn,
+      ChippyWeb.SprintLive,
+      session: %{
+        user_id: conn.cookies["user_id"],
+        user_color: conn.cookies["user_color"],
+        sprint_id: sprint_id
+      }
+    )
   end
 end

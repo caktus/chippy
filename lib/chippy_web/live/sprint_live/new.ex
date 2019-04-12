@@ -27,7 +27,7 @@ defmodule ChippyWeb.SprintLive.New do
       {:ok, _pid} -> 
         {:stop, socket
           |> put_flash(:info, "Sprint created! Let's place the chips!")
-          |> redirect(to: Routes.live_path(socket, ChippyWeb.SprintLive, name))}
+          |> redirect(to: Routes.page_path(ChippyWeb.Endpoint, :sprint, name))}
       {:error, _error} ->
         {:noreply, assign(socket, other_errors: "There was a problem ...")}
     end

@@ -19,10 +19,8 @@ defmodule ChippyWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    get "/new", PageController, :new
-    
-    live "/sprint/new", SprintLive.New
-    live "/s/:sid", SprintLive
+    live "/sprint/new", SprintLive.New, as: :new_sprint
+    get "/sprint/:sid", PageController, :sprint    
   end
 
   # Other scopes may use custom stacks.
