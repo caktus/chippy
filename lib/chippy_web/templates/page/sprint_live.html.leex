@@ -1,7 +1,7 @@
 <% alias Chippy.Sprint %>
 
 <div>
-  Hello world! This is sprint "<%= @sprint_id %>". Your name is <b><%= URI.decode @your_name %></b>, and your color is <span style="color: #<%= URI.decode @your_color %>">#<%= URI.decode @your_color %></span>.
+  Hello world! This is sprint "<%= @sprint_id %>". Your name is <b><%= URI.decode @your_name %></b>.
 </div>
 
 <section class="chips">
@@ -10,15 +10,22 @@
       <div class="column column-20">
         <div class="row"><%= project_name %></div>
         <div class="row">
-          <button class="button button-small button-clear">
+          <button phx-click="remove_chip" phx-value="<%= project_name %>" class="button button-small button-clear">
             -
           </button>
-          <button class="button button-small button-clear">
+          <button phx-click="add_chip" phx-value="<%= project_name %>" class="button button-small button-clear">
             +
           </button>
         </div>
       </div>
       <div class="column column-80">
+        <%= for {name, chips} <- allocation do %>
+          <div class="row row-chips">
+            <%= for _i <- 1..chips do %>
+              <span class="chip" style="background-color: <%= Colorify.hex name %>"></span>
+            <% end %>
+          </div>
+        <% end %>
       </div>
     </div>
   <% end %>
