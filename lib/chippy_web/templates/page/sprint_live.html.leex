@@ -34,19 +34,26 @@
             type="text"
             name="project_name"
             placeholder="Project name"
-            value="<%= @project_name %>"
+            autofocus
           />
         </div>
       </div>
       <div class="column column-20">
         <div class="row">
           <button
-            <%= if @project_name == "", do: "disabled", else: "" %>
+            <%= if @project_name == "" || @name_taken, do: "disabled", else: "" %>
           >
             Add project
           </button>
         </div>
       </div>
     </div>
+    <%= if @name_taken do %>
+      <div class="row">
+        <div class="error">
+          That project name is taken.
+        </div>
+      </div>
+    <% end %>
   </form>
 </section>

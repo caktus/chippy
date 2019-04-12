@@ -30,8 +30,8 @@ defmodule Chippy.Sprint do
     }
   end
 
-  def has_project?(sprint, project_name) do
-    Map.has_key?(sprint, project_name)
+  def has_project?(%Sprint{project_allocations: project_allocations}, project_name) do
+    Map.has_key?(project_allocations, project_name)
   end
 
   def sorted_allocations(sprint) do
