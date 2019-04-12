@@ -14,14 +14,10 @@ import "phoenix_html";
 // Import local files
 //
 import LiveSocket from "phoenix_live_view";
-import { getUserName } from "./user";
 
 const initializeApp = () => {
-  // Assign ourselves a username, if needed, and make sure it appears in the header
-  const userName = getUserName();
   const liveSocket = new LiveSocket("/live");
   liveSocket.connect();
-  console.log(`Hi, ${userName}! Eventually we'll do something with the name you chose … maybe?`);
 };
 
 if (window.addEventListener) {
