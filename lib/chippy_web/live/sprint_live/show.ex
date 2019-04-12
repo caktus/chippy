@@ -1,6 +1,7 @@
-defmodule ChippyWeb.SprintLive do
+defmodule ChippyWeb.SprintLive.Show do
   use Phoenix.LiveView
 
+  alias Phoenix.PubSub
   alias Chippy.{SprintServer}
   alias ChippyWeb.Router.Helpers, as: Routes
 
@@ -13,6 +14,7 @@ defmodule ChippyWeb.SprintLive do
 
     case pid_or_nil do
       pid when is_pid(pid) ->
+        PubSub.subscribe(Chippy.PubSub, "sprint:" <> sprint_id)
         new_sock =
           socket
           |> assign(sprint_id: sprint_id)
@@ -47,6 +49,7 @@ defmodule ChippyWeb.SprintLive do
         %{assigns: %{sprint_id: sprint_id}} = socket
       ) do
     new_sprint = SprintServer.add_project(sprint_id, project_name)
+    PubSub.broadcast(Chippy.PubSub, "sprint:" <> sprint_id, {:sprints, :update, new_sprint})
     {:noreply, assign(socket, sprint: new_sprint)}
   end
 
@@ -56,6 +59,7 @@ defmodule ChippyWeb.SprintLive do
         %{assigns: %{sprint_id: sprint_id, your_name: person_name}} = socket
       ) do
     new_sprint = SprintServer.add_chip(sprint_id, project_name, person_name)
+    PubSub.broadcast(Chippy.PubSub, "sprint:" <> sprint_id, {:sprints, :update, new_sprint})
     {:noreply, assign(socket, sprint: new_sprint)}
   end
 
@@ -65,6 +69,11 @@ defmodule ChippyWeb.SprintLive do
         %{assigns: %{sprint_id: sprint_id, your_name: person_name}} = socket
       ) do
     new_sprint = SprintServer.remove_chip(sprint_id, project_name, person_name)
+    PubSub.broadcast(Chippy.PubSub, "sprint:" <> sprint_id, {:sprints, :update, new_sprint})
+    {:noreply, assign(socket, sprint: new_sprint)}
+  end
+
+  def handle_info({:sprints, :update, new_sprint}, socket) do
     {:noreply, assign(socket, sprint: new_sprint)}
   end
 end

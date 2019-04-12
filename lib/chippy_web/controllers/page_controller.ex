@@ -31,7 +31,7 @@ defmodule ChippyWeb.PageController do
   def sprint(conn, %{"sid" => sprint_id}) do
     LiveController.live_render(
       conn,
-      ChippyWeb.SprintLive,
+      ChippyWeb.SprintLive.Show,
       session: %{
         user_id: get_session(conn, :user_id),
         user_color: get_session(conn, :user_color),
