@@ -14,7 +14,7 @@
           </button>
         </div>
       </div>
-      <div class="column column-80">
+      <div class="column column-60">
         <%= for {name, chips} <- allocation do %>
           <div class="row row-chips">
             <%= for _i <- 1..chips do %>
@@ -22,6 +22,9 @@
             <% end %>
           </div>
         <% end %>
+      </div>
+      <div class="column column-20 total-count">
+        <%= allocation |> Map.values |> Enum.sum %>
       </div>
     </div>
   <% end %>

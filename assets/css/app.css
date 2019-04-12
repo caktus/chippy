@@ -2,6 +2,12 @@
 
 @import "./phoenix.css";
 
+.total-count {
+  display: flex !important;
+  align-items: center;
+  font-size: 200%;
+  font-weight: bold;
+}
 
 .chip {
   height: 25px;
