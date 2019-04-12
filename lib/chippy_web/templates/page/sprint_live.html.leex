@@ -1,0 +1,52 @@
+<% alias Chippy.Sprint %>
+
+<section class="chips">
+  <%= for {project_name, allocation} <- Sprint.sorted_allocations(@sprint) do %>
+    <div class="row project">
+      <div class="column column-20">
+        <div class="row"><%= project_name %></div>
+        <div class="row">
+          <button phx-click="remove_chip" phx-value="<%= project_name %>" class="button button-small button-clear">
+            -
+          </button>
+          <button phx-click="add_chip" phx-value="<%= project_name %>" class="button button-small button-clear">
+            +
+          </button>
+        </div>
+      </div>
+      <div class="column column-80">
+        <%= for {name, chips} <- allocation do %>
+          <div class="row row-chips">
+            <%= for _i <- 1..chips do %>
+              <span class="chip" style="background-color: <%= Colorify.hex name %>" title="<%= name %>"></span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <form phx-change="lookup_project" phx-submit="create_project">
+    <div class="row">
+      <div class="column column-20">
+        <div class="row">
+          <input
+            type="text"
+            name="project_name"
+            placeholder="Project name"
+            value="<%= @project_name %>"
+          />
+        </div>
+      </div>
+      <div class="column column-20">
+        <div class="row">
+          <button
+            <%= if @project_name == "", do: "disabled", else: "" %>
+          >
+            Add project
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</section>

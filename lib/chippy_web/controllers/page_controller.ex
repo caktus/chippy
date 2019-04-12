@@ -1,7 +1,9 @@
 defmodule ChippyWeb.PageController do
   use ChippyWeb, :controller
+  alias Phoenix.LiveView.Controller, as: LiveController
 
-  alias Chippy.{Sprint, SprintServer, SprintSupervisor}
+  alias Chippy.{SprintServer, SprintSupervisor}
+  alias ChippyWeb.Router.Helpers, as: Routes
 
   def index(conn, _params) do
     sprints =
@@ -14,37 +16,34 @@ defmodule ChippyWeb.PageController do
     |> render("index.html")
   end
 
-  def new(conn, _params) do
-    random_name = :crypto.strong_rand_bytes(8) |> Base.url_encode64() |> binary_part(0, 8)
-
-    case SprintSupervisor.start_sprint(random_name, []) do
-      {:ok, _pid} ->
-        redirect(conn, to: Routes.page_path(conn, :sprint, random_name))
-
-      {:error, _error} ->
-        conn
-        |> put_flash(:error, "Error! Error!!")
-        |> redirect(to: Routes.page_path(conn, :new))
-    end
+  def profile(conn, _params) do
+    conn
+    |> render("profile.html")
   end
 
-  # NOTE: pretty much immediately I'm going to want to replace
-  # this with a React view, now that I'm thinking about it ...
+  def profile_save(conn, %{"profile" => %{"user_id" => user_id}}) do
+    conn
+    |> put_session(:user_id, user_id)
+    |> put_flash(:info, "Profile saved successfully.")
+    |> redirect(to: Routes.page_path(conn, :index))
+  end
+
   def sprint(conn, %{"sid" => sprint_id}) do
-    pid_or_nil = sprint_id |> SprintServer.via_tuple() |> GenServer.whereis()
+    case get_session(conn, :user_id) do
+      user_id when user_id != nil ->
+        LiveController.live_render(
+          conn,
+          ChippyWeb.SprintLive.Show,
+          session: %{
+            user_id: user_id,
+            sprint_id: sprint_id
+          }
+        )
 
-    case pid_or_nil do
-      pid when is_pid(pid) ->
+      _ ->
         conn
-        |> assign(:by_users, SprintServer.display_by_users(sprint_id))
-        |> assign(:sid, sprint_id)
-        # TODO: do something with :by_users value?
-        |> render("sprint.html")
-
-      nil ->
-        conn
-        |> put_flash(:error, "Sprint not found.")
-        |> redirect(to: Routes.page_path(conn, :index))
+        |> put_flash(:error, "Please set a user name before accessing a sprint.")
+        |> redirect(to: Routes.page_path(conn, :profile))
     end
   end
 end

@@ -1,10 +1,12 @@
 defmodule ChippyWeb.Router do
   use ChippyWeb, :router
+  import Phoenix.LiveView.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_flash
+    plug Phoenix.LiveView.Flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
@@ -17,8 +19,10 @@ defmodule ChippyWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    get "/new", PageController, :new
-    get "/s/:sid", PageController, :sprint
+    get "/profile", PageController, :profile
+    post "/profile", PageController, :profile_save
+    live "/sprint/new", SprintLive.New, as: :new_sprint
+    get "/sprint/:sid", PageController, :sprint
   end
 
   # Other scopes may use custom stacks.

@@ -30,7 +30,7 @@ section.chips>.project {
 	margin-bottom: 10px;
 }
 
-section.chips>.row>.column {
+section.chips>form>.row>.column {
   margin-right: 10px;
 }
 
@@ -53,4 +53,8 @@ footer {
 footer>.container {
   padding-top: 0.5rem;
   border-top: 1px solid #eee;
+}
+
+.error {
+  color: crimson;
 }
