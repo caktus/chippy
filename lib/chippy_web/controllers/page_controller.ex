@@ -1,7 +1,7 @@
 defmodule ChippyWeb.PageController do
   use ChippyWeb, :controller
   alias Phoenix.LiveView.Controller, as: LiveController
-  
+
   alias Chippy.{SprintServer, SprintSupervisor}
   alias ChippyWeb.Router.Helpers, as: Routes
 
@@ -23,9 +23,9 @@ defmodule ChippyWeb.PageController do
 
   def profile_save(conn, %{"profile" => %{"user_id" => user_id}}) do
     conn
-      |> put_session(:user_id, user_id)
-      |> put_flash(:info, "Profile saved successfully.")
-      |> redirect(to: Routes.page_path(conn, :index))
+    |> put_session(:user_id, user_id)
+    |> put_flash(:info, "Profile saved successfully.")
+    |> redirect(to: Routes.page_path(conn, :index))
   end
 
   def sprint(conn, %{"sid" => sprint_id}) do
