@@ -16,13 +16,25 @@ defmodule ChippyWeb.PageController do
     |> render("index.html")
   end
 
+  def profile(conn, _params) do
+    conn
+    |> render("profile.html")
+  end
+
+  def profile_save(conn, %{"profile" => %{"user_id" => user_id}}) do
+    conn
+      |> put_session(:user_id, user_id)
+      |> put_flash(:info, "Profile saved successfully.")
+      |> redirect(to: Routes.page_path(conn, :index))
+  end
+
   def sprint(conn, %{"sid" => sprint_id}) do
     LiveController.live_render(
       conn,
       ChippyWeb.SprintLive,
       session: %{
-        user_id: conn.cookies["user_id"],
-        user_color: conn.cookies["user_color"],
+        user_id: get_session(conn, :user_id),
+        user_color: get_session(conn, :user_color),
         sprint_id: sprint_id
       }
     )
