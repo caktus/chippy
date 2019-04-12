@@ -1,8 +1,8 @@
 defmodule ChippyWeb.PageController do
   use ChippyWeb, :controller
-
+  
   alias Chippy.{SprintServer, SprintSupervisor}
-  alias Phoenix.LiveView
+  alias ChippyWeb.Router.Helpers, as: Routes
 
   def index(conn, _params) do
     sprints =
@@ -20,32 +20,12 @@ defmodule ChippyWeb.PageController do
 
     case SprintSupervisor.start_sprint(random_name, []) do
       {:ok, _pid} ->
-        redirect(conn, to: Routes.page_path(conn, :sprint, random_name))
+        redirect(conn, to: Routes.live_path(ChippyWeb.Endpoint, ChippyWeb.SprintLive, random_name))
 
       {:error, _error} ->
         conn
         |> put_flash(:error, "Error! Error!!")
         |> redirect(to: Routes.page_path(conn, :new))
-    end
-  end
-
-  def sprint(conn, %{"sid" => sprint_id}) do
-    pid_or_nil = sprint_id |> SprintServer.via_tuple() |> GenServer.whereis()
-
-    case pid_or_nil do
-      pid when is_pid(pid) ->
-        LiveView.Controller.live_render(
-          conn,
-          ChippyWeb.SprintLive,
-          session: %{
-            sprint_id: sprint_id,
-            by_users: SprintServer.display_by_users(sprint_id)
-          }
-        )
-      nil ->
-        conn
-        |> put_flash(:error, "Sprint not found.")
-        |> redirect(to: Routes.page_path(conn, :index))
     end
   end
 end

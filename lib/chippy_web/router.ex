@@ -1,5 +1,6 @@
 defmodule ChippyWeb.Router do
   use ChippyWeb, :router
+  import Phoenix.LiveView.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -19,7 +20,8 @@ defmodule ChippyWeb.Router do
 
     get "/", PageController, :index
     get "/new", PageController, :new
-    get "/s/:sid", PageController, :sprint
+    
+    live "/s/:sid", SprintLive
   end
 
   # Other scopes may use custom stacks.
