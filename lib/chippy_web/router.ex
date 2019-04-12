@@ -19,6 +19,8 @@ defmodule ChippyWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/profile", PageController, :profile
+    post "/profile", PageController, :profile_save
     live "/sprint/new", SprintLive.New, as: :new_sprint
     get "/sprint/:sid", PageController, :sprint
   end

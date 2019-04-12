@@ -13,7 +13,8 @@ defmodule ChippyWeb.SprintLive do
 
     case pid_or_nil do
       pid when is_pid(pid) ->
-        new_sock = socket
+        new_sock =
+          socket
           |> assign(sprint_id: sprint_id)
           |> assign(sprint: SprintServer.display(sprint_id))
           |> assign(your_name: user_id)
@@ -21,30 +22,48 @@ defmodule ChippyWeb.SprintLive do
           |> assign(name_taken: false)
           |> assign(errors: "")
           |> assign(project_name: "")
+
         {:ok, new_sock}
+
       nil ->
         {:stop,
-          socket
-          |> put_flash(:error, "Sprint not found.")
-          |> redirect(to: Routes.page_path(ChippyWeb.Endpoint, :index))}
+         socket
+         |> put_flash(:error, "Sprint not found.")
+         |> redirect(to: Routes.page_path(ChippyWeb.Endpoint, :index))}
     end
   end
 
-  def handle_event("lookup_project", %{"project_name" => project_name}, %{assigns: %{sprint_id: sprint_id}} = socket) do
+  def handle_event(
+        "lookup_project",
+        %{"project_name" => project_name},
+        %{assigns: %{sprint_id: sprint_id}} = socket
+      ) do
     {:noreply, assign(socket, name_taken: SprintServer.has_project?(sprint_id, project_name))}
   end
 
-  def handle_event("create_project", %{"project_name" => project_name}, %{assigns: %{sprint_id: sprint_id}} = socket) do
+  def handle_event(
+        "create_project",
+        %{"project_name" => project_name},
+        %{assigns: %{sprint_id: sprint_id}} = socket
+      ) do
     new_sprint = SprintServer.add_project(sprint_id, project_name)
     {:noreply, assign(socket, sprint: new_sprint)}
   end
 
-  def handle_event("add_chip", project_name, %{assigns: %{ sprint_id: sprint_id, your_name: person_name}} = socket) do
+  def handle_event(
+        "add_chip",
+        project_name,
+        %{assigns: %{sprint_id: sprint_id, your_name: person_name}} = socket
+      ) do
     new_sprint = SprintServer.add_chip(sprint_id, project_name, person_name)
     {:noreply, assign(socket, sprint: new_sprint)}
   end
 
-  def handle_event("remove_chip", project_name, %{assigns: %{ sprint_id: sprint_id, your_name: person_name}} = socket) do
+  def handle_event(
+        "remove_chip",
+        project_name,
+        %{assigns: %{sprint_id: sprint_id, your_name: person_name}} = socket
+      ) do
     new_sprint = SprintServer.remove_chip(sprint_id, project_name, person_name)
     {:noreply, assign(socket, sprint: new_sprint)}
   end
