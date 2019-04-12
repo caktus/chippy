@@ -60,3 +60,13 @@
     <% end %>
   </form>
 </section>
+
+<section class="users">
+  <ul>  
+    <%= for {name, %{metas: metas}} <- assigns[:online_users] do %>
+      <li>
+        <%= name %><%= if length(metas) > 1, do: " (" <> (metas |> length |> Integer.to_string ) <> ")" %>
+      </li>
+    <% end %>
+  </ul>
+</section>
