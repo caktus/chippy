@@ -39,6 +39,7 @@ defmodule ChippyWeb.PageController do
             sprint_id: sprint_id
           }
         )
+
       _ ->
         conn
         |> put_flash(:error, "Please set a user name before accessing a sprint.")
