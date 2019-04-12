@@ -1,6 +1,6 @@
 <% alias Chippy.Sprint %>
 
-<section class="chips">
+<section class="chips container">
   <%= for {project_name, allocation} <- Sprint.sorted_allocations(@sprint) do %>
     <div class="row project">
       <div class="column column-20">
@@ -61,12 +61,17 @@
   </form>
 </section>
 
-<section class="users">
-  <ul>  
-    <%= for {name, %{metas: metas}} <- assigns[:online_users] do %>
-      <li>
-        <%= name %><%= if length(metas) > 1, do: " (" <> (metas |> length |> Integer.to_string ) <> ")" %>
-      </li>
-    <% end %>
-  </ul>
+<section class="users container">
+  <div class="row">
+    <div class="column">
+      <ul>
+        <%= for {name, %{metas: metas}} <- assigns[:online_users] do %>
+          <li class="user-info-item">
+            <%= name %><%= if length(metas) > 1, do: " (" <> (metas |> length |> Integer.to_string ) <> " devices)" %>
+            <span class="chip user-count" style="background-color: <%= Colorify.hex name %>;"><%= Sprint.user_chip_count(@sprint, name) %></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
 </section>

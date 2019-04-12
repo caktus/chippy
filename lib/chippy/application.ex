@@ -16,7 +16,7 @@ defmodule Chippy.Application do
       # {Chippy.Worker, arg},
       {Registry, keys: :unique, name: :sprint_registry},
       Chippy.SprintSupervisor,
-      ChippyWeb.Presence,
+      ChippyWeb.Presence
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

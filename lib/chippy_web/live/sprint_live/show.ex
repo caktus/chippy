@@ -87,7 +87,10 @@ defmodule ChippyWeb.SprintLive.Show do
     {:noreply, assign(socket, sprint: new_sprint)}
   end
 
-  def handle_info(%Broadcast{event: "presence_diff"}, %{assigns: %{sprint_id: sprint_id}} = socket) do
+  def handle_info(
+        %Broadcast{event: "presence_diff"},
+        %{assigns: %{sprint_id: sprint_id}} = socket
+      ) do
     {:noreply, assign(socket, online_users: Presence.list("users:" <> sprint_id))}
   end
 end
