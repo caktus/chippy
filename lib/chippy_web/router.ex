@@ -20,7 +20,7 @@ defmodule ChippyWeb.Router do
 
     get "/", PageController, :index
     live "/sprint/new", SprintLive.New, as: :new_sprint
-    get "/sprint/:sid", PageController, :sprint    
+    get "/sprint/:sid", PageController, :sprint
   end
 
   # Other scopes may use custom stacks.

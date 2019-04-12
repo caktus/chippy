@@ -30,6 +30,16 @@ defmodule Chippy.Sprint do
     }
   end
 
+  def has_project?(sprint, project_name) do
+    Map.has_key?(sprint, project_name)
+  end
+
+  def sorted_allocations(sprint) do
+    sprint.project_allocations
+    |> Map.to_list
+    |> Enum.sort_by(fn ({k, v}) -> k end)
+  end
+
   defp add_chips_to_project(project, person_name, chip_count) do
     Map.update(project, person_name, chip_count, &(&1 + chip_count))
   end
