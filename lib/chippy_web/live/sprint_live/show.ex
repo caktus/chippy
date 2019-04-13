@@ -13,6 +13,7 @@ defmodule ChippyWeb.SprintLive.Show do
 
   defp user_chip_counts(sprint_id) do
     SprintServer.display_by_users(sprint_id)
+    # Create a map of %{"username" => %{chip_count: N}} for all users in the Sprint
     |> Map.new(fn {name, projects} ->
       {name, %{chip_count: projects |> Map.values() |> Enum.sum()}}
     end)
@@ -20,7 +21,12 @@ defmodule ChippyWeb.SprintLive.Show do
 
   defp sprint_users(sprint_id) do
     Presence.list("users:" <> sprint_id)
+    # Create a map of %{"username" => %{device_count: N}} for all online users
     |> Map.new(fn {name, %{metas: metas}} -> {name, %{device_count: length(metas)}} end)
+    # Merge the map of online users with the users and their chip counts from the
+    # SprintServer, so we end up with %{"username" => %{device_count: N, chip_count: N}}.
+    # We need the nested Map.merge since we're merging both the top-level map and its
+    # values per-key (which are also maps).
     |> Map.merge(user_chip_counts(sprint_id), fn _k, a, b -> Map.merge(a, b) end)
   end
 
