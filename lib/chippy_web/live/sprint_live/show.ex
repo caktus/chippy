@@ -96,8 +96,11 @@ defmodule ChippyWeb.SprintLive.Show do
     {:noreply, assign(socket, %{sprint: new_sprint, online_users: online_users(sprint_id)})}
   end
 
-  def handle_info({:sprints, :update, new_sprint}, socket) do
-    {:noreply, assign(socket, sprint: new_sprint)}
+  def handle_info(
+        {:sprints, :update, new_sprint},
+        %{assigns: %{sprint_id: sprint_id}} = socket
+      ) do
+    {:noreply, assign(socket, %{sprint: new_sprint, online_users: online_users(sprint_id)})}
   end
 
   def handle_info(
