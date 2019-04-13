@@ -65,10 +65,17 @@
   <div class="row">
     <div class="column">
       <ul>
-        <%= for {name, %{metas: metas}} <- assigns[:online_users] do %>
+        <%= for {name, attrs} <- assigns[:online_users] do %>
           <li class="user-info-item">
-            <%= name %><%= if length(metas) > 1, do: " (" <> (metas |> length |> Integer.to_string ) <> " devices)" %>
-            <span class="chip user-count" style="background-color: <%= Colorify.hex name %>;"><%= Sprint.user_chip_count(@sprint, name) %></span>
+            <%= name %>
+            <%= case Map.get(attrs, :device_count, 0) do
+              0 -> "(disconnected)"
+              1 -> ""
+              _ -> " (" <> Integer.to_string(attrs[:device_count]) <> " devices)"
+              end %>
+            <span class="chip user-count" style="background-color: <%= Colorify.hex name %>;">
+              <%= Map.get(attrs, :chip_count, 0) %>
+            </span>
           </li>
         <% end %>
       </ul>

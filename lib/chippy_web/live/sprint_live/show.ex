@@ -11,6 +11,19 @@ defmodule ChippyWeb.SprintLive.Show do
     ChippyWeb.PageView.render("sprint_live.html", assigns)
   end
 
+  defp user_chip_counts(sprint_id) do
+    SprintServer.display_by_users(sprint_id)
+    |> Map.new(fn {name, projects} ->
+      {name, %{chip_count: projects |> Map.values() |> Enum.sum()}}
+    end)
+  end
+
+  defp online_users(sprint_id) do
+    Presence.list("users:" <> sprint_id)
+    |> Map.new(fn {name, %{metas: metas}} -> {name, %{device_count: length(metas)}} end)
+    |> Map.merge(user_chip_counts(sprint_id), fn _k, a, b -> Map.merge(a, b) end)
+  end
+
   def mount(%{user_id: user_id, sprint_id: sprint_id}, socket) do
     pid_or_nil = sprint_id |> SprintServer.via_tuple() |> GenServer.whereis()
 
@@ -28,7 +41,7 @@ defmodule ChippyWeb.SprintLive.Show do
            name_taken: false,
            errors: "",
            project_name: "",
-           online_users: Presence.list("users:" <> sprint_id)
+           online_users: online_users(sprint_id)
          })}
 
       nil ->
@@ -80,7 +93,7 @@ defmodule ChippyWeb.SprintLive.Show do
 
   def update_sprint(sprint_id, new_sprint, socket) do
     PubSub.broadcast(Chippy.PubSub, "sprint:" <> sprint_id, {:sprints, :update, new_sprint})
-    {:noreply, assign(socket, sprint: new_sprint)}
+    {:noreply, assign(socket, %{sprint: new_sprint, online_users: online_users(sprint_id)})}
   end
 
   def handle_info({:sprints, :update, new_sprint}, socket) do
@@ -91,6 +104,6 @@ defmodule ChippyWeb.SprintLive.Show do
         %Broadcast{event: "presence_diff"},
         %{assigns: %{sprint_id: sprint_id}} = socket
       ) do
-    {:noreply, assign(socket, online_users: Presence.list("users:" <> sprint_id))}
+    {:noreply, assign(socket, online_users: online_users(sprint_id))}
   end
 end

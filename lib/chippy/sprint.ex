@@ -157,30 +157,6 @@ defmodule Chippy.Sprint do
   end
 
   @doc """
-  Returns the users and their total chips placed in the sprint.
-
-    iex> Sprint.new(["Foo", "Bar"]) \
-      |> Sprint.add_chips("Foo", "nmashton", 2) \
-      |> Sprint.add_chips("Foo", "vkurup", 3) \
-      |> Sprint.add_chips("Bar", "vkurup", 1) \
-      |> Sprint.user_chip_counts
-    [{"nmashton", 2}, {"vkurup", 4}]
-  """
-  def user_chip_counts(sprint) do
-    for {user, projects} <- Sprint.display_by_users(sprint) do
-      {user,
-       projects
-       |> Map.values()
-       |> Enum.sum()}
-    end
-    |> Enum.sort()
-  end
-
-  def user_chip_count(sprint, user_name) do
-    Sprint.display_by_users(sprint) |> Map.get(user_name, %{}) |> Map.values() |> Enum.sum()
-  end
-
-  @doc """
   Returns the projects for a sprint, sorted alphabetically.
 
     iex> Sprint.new(["Foo", "Bar"]) |> Sprint.display_projects
