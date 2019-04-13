@@ -12,7 +12,14 @@
       <section class="container">
         <nav role="navigation">
           <ul>
-            <li><a href="/profile" id="user_id"><%= Plug.Conn.get_session(@conn, :user_id) || "Edit profile" %></a></li>
+            <li>
+              <a href="/profile" id="user_id">
+                <%= case Plug.Conn.get_session(@conn, :user_id) || "" do
+                  "" -> "Edit profile"
+                  user_id -> user_id
+                end %>
+              </a>
+            </li>
           </ul>
         </nav>
         <a href="/">
