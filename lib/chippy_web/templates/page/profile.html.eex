@@ -1,6 +1,12 @@
 <section class="row">
   <%= form_for @conn, Routes.page_path(@conn, :profile), [as: :profile], fn f -> %>
     Name: <%= text_input f, :user_id, value: Plug.Conn.get_session(@conn, :user_id), required: "required", autofocus: "autofocus" %>
+    <%=
+      case Map.get(@conn.query_params, "next", "") do
+        "" -> ""
+        value -> hidden_input f, :next, value: value
+      end
+    %>
     <%= submit "Save" %>
   <% end %>
 </section>

@@ -21,11 +21,11 @@ defmodule ChippyWeb.PageController do
     |> render("profile.html")
   end
 
-  def profile_save(conn, %{"profile" => %{"user_id" => user_id}}) do
+  def profile_save(conn, %{"profile" => %{"user_id" => user_id} = form}) do
     conn
     |> put_session(:user_id, String.trim(user_id))
     |> put_flash(:info, "Profile saved successfully.")
-    |> redirect(to: Routes.page_path(conn, :index))
+    |> redirect(to: Map.get(form, "next", Routes.page_path(conn, :index)))
   end
 
   def sprint(conn, %{"sid" => sprint_id}) do
@@ -43,7 +43,11 @@ defmodule ChippyWeb.PageController do
       _ ->
         conn
         |> put_flash(:error, "Please set a user name before accessing a sprint.")
-        |> redirect(to: Routes.page_path(conn, :profile))
+        |> redirect(
+          to:
+            Routes.page_path(conn, :profile) <>
+              "?next=" <> Routes.page_path(conn, :sprint, sprint_id)
+        )
     end
   end
 end

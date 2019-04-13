@@ -13,12 +13,13 @@
         <nav role="navigation">
           <ul>
             <li>
-              <a href="/profile" id="user_id">
-                <%= case Plug.Conn.get_session(@conn, :user_id) || "" do
+              <%= link(
+                case Plug.Conn.get_session(@conn, :user_id) || "" do
                   "" -> "Edit profile"
                   user_id -> user_id
-                end %>
-              </a>
+                end,
+                to: Routes.page_path(ChippyWeb.Endpoint, :profile) <> "?next=" <> @conn.request_path
+              ) %>
             </li>
           </ul>
         </nav>
