@@ -37,7 +37,7 @@ defmodule Chippy.Sprint do
   def sorted_allocations(sprint) do
     sprint.project_allocations
     |> Map.to_list()
-    |> Enum.sort_by(fn {k, v} -> k end)
+    |> Enum.sort_by(fn {k, _v} -> k end)
   end
 
   defp add_chips_to_project(project, person_name, chip_count) do
