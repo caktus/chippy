@@ -2,12 +2,12 @@ defmodule ChippyWeb.PageController do
   use ChippyWeb, :controller
   alias Phoenix.LiveView.Controller, as: LiveController
 
-  alias Chippy.{SprintServer, SprintSupervisor}
+  alias Chippy.SprintSupervisor
   alias ChippyWeb.Router.Helpers, as: Routes
 
   def index(conn, _params) do
     sprints =
-      Supervisor.which_children(Chippy.SprintSupervisor)
+      Supervisor.which_children(SprintSupervisor)
       |> Enum.map(fn {_, pid, _, _} -> pid end)
       |> Enum.map(fn pid -> Registry.keys(:sprint_registry, pid) end)
 
@@ -23,14 +23,14 @@ defmodule ChippyWeb.PageController do
 
   def profile_save(conn, %{"profile" => %{"user_id" => user_id} = form}) do
     conn
-    |> put_session(:user_id, user_id)
+    |> put_session(:user_id, String.trim(user_id))
     |> put_flash(:info, "Profile saved successfully.")
     |> redirect(to: Map.get(form, "next", Routes.page_path(conn, :index)))
   end
 
   def sprint(conn, %{"sid" => sprint_id}) do
-    case get_session(conn, :user_id) do
-      user_id when user_id not in [nil, ""] ->
+    case get_session(conn, :user_id) || "" do
+      user_id when user_id != "" ->
         LiveController.live_render(
           conn,
           ChippyWeb.SprintLive.Show,
