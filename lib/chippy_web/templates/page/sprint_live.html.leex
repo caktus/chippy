@@ -71,7 +71,7 @@
             <%= case Map.get(attrs, :device_count, 0) do
               0 -> "(disconnected)"
               1 -> ""
-              _ -> " (" <> Integer.to_string(attrs[:device_count]) <> " devices)"
+              _ -> "(" <> Integer.to_string(attrs[:device_count]) <> " devices)"
               end %>
             <span class="chip user-count" style="background-color: <%= Colorify.hex name %>;">
               <%= Map.get(attrs, :chip_count, 0) %>
