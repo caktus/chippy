@@ -18,7 +18,7 @@ defmodule ChippyWeb.SprintLive.Show do
     end)
   end
 
-  defp online_users(sprint_id) do
+  defp sprint_users(sprint_id) do
     Presence.list("users:" <> sprint_id)
     |> Map.new(fn {name, %{metas: metas}} -> {name, %{device_count: length(metas)}} end)
     |> Map.merge(user_chip_counts(sprint_id), fn _k, a, b -> Map.merge(a, b) end)
@@ -41,7 +41,7 @@ defmodule ChippyWeb.SprintLive.Show do
            name_taken: false,
            errors: "",
            project_name: "",
-           online_users: online_users(sprint_id)
+           sprint_users: sprint_users(sprint_id)
          })}
 
       nil ->
@@ -93,20 +93,20 @@ defmodule ChippyWeb.SprintLive.Show do
 
   def update_sprint(sprint_id, new_sprint, socket) do
     PubSub.broadcast(Chippy.PubSub, "sprint:" <> sprint_id, {:sprints, :update, new_sprint})
-    {:noreply, assign(socket, %{sprint: new_sprint, online_users: online_users(sprint_id)})}
+    {:noreply, assign(socket, %{sprint: new_sprint, sprint_users: sprint_users(sprint_id)})}
   end
 
   def handle_info(
         {:sprints, :update, new_sprint},
         %{assigns: %{sprint_id: sprint_id}} = socket
       ) do
-    {:noreply, assign(socket, %{sprint: new_sprint, online_users: online_users(sprint_id)})}
+    {:noreply, assign(socket, %{sprint: new_sprint, sprint_users: sprint_users(sprint_id)})}
   end
 
   def handle_info(
         %Broadcast{event: "presence_diff"},
         %{assigns: %{sprint_id: sprint_id}} = socket
       ) do
-    {:noreply, assign(socket, online_users: online_users(sprint_id))}
+    {:noreply, assign(socket, sprint_users: sprint_users(sprint_id))}
   end
 end

@@ -23,14 +23,14 @@ defmodule ChippyWeb.PageController do
 
   def profile_save(conn, %{"profile" => %{"user_id" => user_id}}) do
     conn
-    |> put_session(:user_id, user_id)
+    |> put_session(:user_id, String.trim(user_id))
     |> put_flash(:info, "Profile saved successfully.")
     |> redirect(to: Routes.page_path(conn, :index))
   end
 
   def sprint(conn, %{"sid" => sprint_id}) do
-    case get_session(conn, :user_id) do
-      user_id when user_id != nil ->
+    case get_session(conn, :user_id) || "" do
+      user_id when user_id != "" ->
         LiveController.live_render(
           conn,
           ChippyWeb.SprintLive.Show,
