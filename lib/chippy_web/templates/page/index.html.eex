@@ -7,14 +7,12 @@
 <section class="row">
   <ul>
     <li>
-      <a href="/sprint/new">
-        Start a new sprint
-      </a>
+      <%= link "Start a new sprint", to: "/sprint/new" %>
     </li>
     <li>Join an existing sprint</li>
     <ul>
     <%= for key <- @sprints do %>
-        <li><a href="/sprint/<%= key %>">Sprint <%= key %></a></li>
+      <li><%= link "Sprint #{key}", to: Routes.page_path(@conn, :sprint, key) %></li>
     <% end %>
     </ul>
   </ul>

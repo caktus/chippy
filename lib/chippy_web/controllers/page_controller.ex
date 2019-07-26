@@ -10,6 +10,8 @@ defmodule ChippyWeb.PageController do
       Supervisor.which_children(SprintSupervisor)
       |> Enum.map(fn {_, pid, _, _} -> pid end)
       |> Enum.map(fn pid -> Registry.keys(:sprint_registry, pid) end)
+      # Registry.keys returns a list, but we only want the first thing in it
+      |> Enum.map(fn [head | tail] -> head end)
 
     conn
     |> assign(:sprints, sprints)
