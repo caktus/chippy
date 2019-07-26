@@ -47,8 +47,7 @@ defmodule ChippyWeb.PageController do
         |> put_flash(:error, "Please set a user name before accessing a sprint.")
         |> redirect(
           to:
-            Routes.page_path(conn, :profile) <>
-              "?next=" <> Routes.page_path(conn, :sprint, sprint_id)
+            Routes.page_path(conn, :profile, next: Routes.page_path(conn, :sprint, sprint_id))
         )
     end
   end
