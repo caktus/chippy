@@ -5,7 +5,7 @@
 .total-count {
   display: flex !important;
   align-items: center;
-  font-size: 200%;
+  font-size: 150%;
   font-weight: bold;
   padding-left: 1em !important;
 }
@@ -15,8 +15,11 @@
   width: 25px;
   background-color: #bbb;
   border-radius: 50%;
-  display: inline-block;
+  display: inline-flex;
   margin: 3px;
+  font-weight: bold;
+  justify-content: center;
+  align-items: center;
 }
 
 .row-chips {
@@ -88,12 +91,8 @@ section.users > ul > li {
 }
 
 .user-count {
-  display: inline-flex;
-  font-weight: bold;
   height: 32px;
   width: 32px;
-  justify-content: center;
-  align-items: center;
   color: white;
   margin-left: 2em;
 }

@@ -20,6 +20,10 @@ config :chippy, ChippyWeb.Endpoint,
     signing_salt: "f+vbVpQNIOm++4C/33LWT0Qq+aWj2Etu"
   ]
 
+# Application settings
+config :chippy,
+  hours_per_chip: 4
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
