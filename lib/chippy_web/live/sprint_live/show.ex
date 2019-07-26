@@ -8,6 +8,7 @@ defmodule ChippyWeb.SprintLive.Show do
   alias ChippyWeb.Router.Helpers, as: Routes
 
   def render(assigns) do
+    assigns = Map.put(assigns, :hours_per_chip, Application.get_env(:chippy, :hours_per_chip))
     ChippyWeb.PageView.render("sprint_live.html", assigns)
   end
 
