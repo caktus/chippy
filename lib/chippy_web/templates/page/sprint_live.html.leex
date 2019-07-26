@@ -74,7 +74,7 @@
               x when x > 1 -> "(" <> Integer.to_string(x) <> " devices)"
               end %>
             <span class="chip user-count" style="background-color: <%= Colorify.hex name %>;">
-              <%= Map.get(attrs, :chip_count, 0) %>
+              <%= Map.get(attrs, :chip_count, 0) * @hours_per_chip %>
             </span>
           </li>
         <% end %>
