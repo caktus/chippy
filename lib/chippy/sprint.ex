@@ -1,6 +1,7 @@
 defmodule Chippy.Sprint do
   @derive Jason.Encoder
-  defstruct project_allocations: %{}
+  defstruct project_allocations: %{},
+            project_limits: %{}
 
   alias Chippy.Sprint
 
@@ -21,12 +22,16 @@ defmodule Chippy.Sprint do
   @doc """
   Adds a new empty project to a sprint.
 
-    iex> Sprint.new([]) |> Sprint.add_project("Foo")
-    %Sprint{project_allocations: %{"Foo" => %{}}}
-  """
-  def add_project(sprint, project_name) do
+    iex> Sprint.new([]) |> Sprint.add_project("Foo", "22")
     %Sprint{
-      project_allocations: Map.put(sprint.project_allocations, project_name, %{})
+      project_allocations: %{"Foo" => %{}},
+      project_limits: %{"Foo" => "22"}
+    }
+  """
+  def add_project(sprint, project_name, hour_limit) do
+    %Sprint{
+      project_allocations: Map.put(sprint.project_allocations, project_name, %{}),
+      project_limits: Map.put(sprint.project_limits, project_name, hour_limit)
     }
   end
 
@@ -166,5 +171,9 @@ defmodule Chippy.Sprint do
     sprint.project_allocations
     |> Enum.map(fn {project_name, _} -> project_name end)
     |> Enum.sort()
+  end
+
+  def hour_limit(sprint, project_name) do
+    sprint.project_limits[project_name]
   end
 end

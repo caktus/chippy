@@ -14,10 +14,10 @@ defmodule Chippy.SprintServer do
   end
 
   # Methods
-  def add_project(sprint_name, project_name) do
+  def add_project(sprint_name, project_name, hour_limit) do
     sprint_name
     |> via_tuple
-    |> GenServer.call({:add_project, project_name})
+    |> GenServer.call({:add_project, project_name, hour_limit})
   end
 
   def has_project?(sprint_name, project_name) do
@@ -60,8 +60,8 @@ defmodule Chippy.SprintServer do
     {:ok, sprint, @timeout}
   end
 
-  def handle_call({:add_project, project_name}, _from, sprint) do
-    new_sprint = Sprint.add_project(sprint, project_name)
+  def handle_call({:add_project, project_name, hour_limit}, _from, sprint) do
+    new_sprint = Sprint.add_project(sprint, project_name, hour_limit)
     {:reply, new_sprint, new_sprint, @timeout}
   end
 
