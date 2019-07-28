@@ -1,6 +1,7 @@
 defmodule Chippy.Sprint do
   @derive Jason.Encoder
-  defstruct project_allocations: %{}
+  defstruct project_allocations: %{},
+            project_limits: %{}
 
   alias Chippy.Sprint
 
@@ -21,12 +22,32 @@ defmodule Chippy.Sprint do
   @doc """
   Adds a new empty project to a sprint.
 
-    iex> Sprint.new([]) |> Sprint.add_project("Foo")
-    %Sprint{project_allocations: %{"Foo" => %{}}}
-  """
-  def add_project(sprint, project_name) do
+  Takes a project_name and an optional hour_limit which is converted to an integer.
+
+    iex> Sprint.new([]) |> Sprint.add_project("Foo", "22")
     %Sprint{
-      project_allocations: Map.put(sprint.project_allocations, project_name, %{})
+      project_allocations: %{"Foo" => %{}},
+      project_limits: %{"Foo" => 22}
+    }
+  """
+  def add_project(sprint, project_name, hour_limit) do
+    hour_limit =
+      case Integer.parse(hour_limit) do
+        # returns a 2-tuple if successful parse with value in first tuple
+        {hour_limit, _} -> hour_limit
+        :error -> 0
+      end
+
+    %Sprint{
+      project_allocations: Map.put(sprint.project_allocations, project_name, %{}),
+      project_limits: Map.put(sprint.project_limits, project_name, hour_limit)
+    }
+  end
+
+  def delete_project(sprint, project_name) do
+    %Sprint{
+      project_allocations: Map.delete(sprint.project_allocations, project_name),
+      project_limits: Map.delete(sprint.project_limits, project_name)
     }
   end
 

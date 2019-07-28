@@ -1,6 +1,14 @@
 <% alias Chippy.Sprint %>
 
 <section class="chips container">
+  <%= if !Enum.empty?(Sprint.sorted_allocations(@sprint)) do %>
+    <div class="row project">
+      <div class="column column-10 column-offset-20">
+        <div class="row"><b>Hours Allocated</b></div>
+      </div>
+    </div>
+  <% end %>
+
   <%= for {project_name, allocation} <- Sprint.sorted_allocations(@sprint) do %>
     <div class="row project">
       <div class="column column-20">
@@ -14,6 +22,10 @@
           </button>
         </div>
       </div>
+      <div class="column column-10">
+        <%= allocation |> Map.values |> Enum.map(&(&1 * @hours_per_chip)) |> Enum.sum %> /
+        <%= hour_limit(@sprint, project_name) %>
+      </div>
       <div class="column column-60">
         <%= for {name, chips} <- allocation do %>
           <div class="row row-chips">
@@ -23,15 +35,17 @@
           </div>
         <% end %>
       </div>
-      <div class="column column-20 total-count">
-        <%= allocation |> Map.values |> Enum.map(&(&1 * @hours_per_chip)) |> Enum.sum %> hours
+      <div class="column column-10">
+        <button phx-click="delete_project" phx-value="<%= project_name %>" class="button button-warning">
+          Delete Project
+        </button>
       </div>
     </div>
   <% end %>
 
   <form phx-change="lookup_project" phx-submit="create_project">
     <div class="row">
-      <div class="column column-20">
+      <div class="column column-40">
         <div class="row">
           <input
             type="text"
@@ -39,9 +53,14 @@
             placeholder="Project name"
             autofocus
           />
+          <input
+            type="number"
+            name="hour_limit"
+            placeholder="PM Allocation"
+          />
         </div>
       </div>
-      <div class="column column-20">
+      <div class="column column-40">
         <div class="row">
           <button
             <%= if @project_name == "" || @name_taken, do: "disabled", else: "" %>
