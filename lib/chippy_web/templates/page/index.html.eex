@@ -7,7 +7,7 @@
 <section class="row">
   <ul>
     <li>
-      <%= link "Start a new sprint", to: "/sprint/new" %>
+      <%= link "Start a new sprint", to: Routes.live_path(@conn, ChippyWeb.SprintLive.New) %>
     </li>
     <li>Join an existing sprint</li>
     <ul>

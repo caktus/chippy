@@ -21,7 +21,7 @@ defmodule ChippyWeb.Router do
     get "/", PageController, :index
     get "/profile", PageController, :profile
     post "/profile", PageController, :profile_save
-    live "/sprint/new", SprintLive.New, as: :new_sprint
+    live "/sprint/new", SprintLive.New
     get "/sprint/:sid", PageController, :sprint
   end
 
