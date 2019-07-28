@@ -22,10 +22,12 @@ defmodule Chippy.Sprint do
   @doc """
   Adds a new empty project to a sprint.
 
+  Takes a project_name and an optional hour_limit which is converted to an integer.
+
     iex> Sprint.new([]) |> Sprint.add_project("Foo", "22")
     %Sprint{
       project_allocations: %{"Foo" => %{}},
-      project_limits: %{"Foo" => "22"}
+      project_limits: %{"Foo" => 22}
     }
   """
   def add_project(sprint, project_name, hour_limit) do
