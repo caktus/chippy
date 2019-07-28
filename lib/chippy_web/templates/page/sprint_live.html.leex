@@ -46,7 +46,7 @@
       <div class="column column-20">
         <div class="row">
           <button
-            <%= if @project_name == "" || @name_taken, do: "disabled", else: "" %>
+            <%= if String.trim(@project_name) == "" || @name_taken, do: "disabled", else: "" %>
           >
             Add project
           </button>
