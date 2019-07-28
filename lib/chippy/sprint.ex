@@ -29,9 +29,23 @@ defmodule Chippy.Sprint do
     }
   """
   def add_project(sprint, project_name, hour_limit) do
+    hour_limit =
+      case Integer.parse(hour_limit) do
+        # returns a 2-tuple if successful parse with value in first tuple
+        {hour_limit, _} -> hour_limit
+        :error -> 0
+      end
+
     %Sprint{
       project_allocations: Map.put(sprint.project_allocations, project_name, %{}),
       project_limits: Map.put(sprint.project_limits, project_name, hour_limit)
+    }
+  end
+
+  def delete_project(sprint, project_name) do
+    %Sprint{
+      project_allocations: Map.delete(sprint.project_allocations, project_name),
+      project_limits: Map.delete(sprint.project_limits, project_name)
     }
   end
 
@@ -171,9 +185,5 @@ defmodule Chippy.Sprint do
     sprint.project_allocations
     |> Enum.map(fn {project_name, _} -> project_name end)
     |> Enum.sort()
-  end
-
-  def hour_limit(sprint, project_name) do
-    sprint.project_limits[project_name]
   end
 end

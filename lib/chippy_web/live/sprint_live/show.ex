@@ -81,6 +81,15 @@ defmodule ChippyWeb.SprintLive.Show do
   end
 
   def handle_event(
+        "delete_project",
+        project_name,
+        %{assigns: %{sprint_id: sprint_id}} = socket
+      ) do
+    new_sprint = SprintServer.delete_project(sprint_id, project_name)
+    update_sprint(sprint_id, new_sprint, socket)
+  end
+
+  def handle_event(
         "add_chip",
         project_name,
         %{assigns: %{sprint_id: sprint_id, your_name: person_name}} = socket

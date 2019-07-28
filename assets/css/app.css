@@ -2,14 +2,6 @@
 
 @import "./phoenix.css";
 
-.total-count {
-  display: flex !important;
-  align-items: center;
-  font-size: 150%;
-  font-weight: bold;
-  padding-left: 1em !important;
-}
-
 .chip {
   height: 25px;
   width: 25px;
@@ -52,6 +44,10 @@ section.chips>form>.row>.column {
   margin: 0 0.5rem;
   width: 2.8rem;
   text-align: center;
+}
+.button-warning {
+  background-color: crimson;
+  border-color: crimson;
 }
 
 footer {

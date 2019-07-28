@@ -20,6 +20,12 @@ defmodule Chippy.SprintServer do
     |> GenServer.call({:add_project, project_name, hour_limit})
   end
 
+  def delete_project(sprint_name, project_name) do
+    sprint_name
+    |> via_tuple
+    |> GenServer.call({:delete_project, project_name})
+  end
+
   def has_project?(sprint_name, project_name) do
     sprint_name
     |> via_tuple
@@ -67,6 +73,11 @@ defmodule Chippy.SprintServer do
 
   def handle_call({:has_project, project_name}, _from, sprint) do
     {:reply, Sprint.has_project?(sprint, project_name), sprint, @timeout}
+  end
+
+  def handle_call({:delete_project, project_name}, _from, sprint) do
+    new_sprint = Sprint.delete_project(sprint, project_name)
+    {:reply, new_sprint, new_sprint, @timeout}
   end
 
   def handle_call({:add_chip, project_name, person_name}, _from, sprint) do
