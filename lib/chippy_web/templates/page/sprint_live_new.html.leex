@@ -1,6 +1,14 @@
 <form phx-change="lookup_name" phx-submit="create">
-  <input type="text" name="name" placeholder="Sprint name" value="<%= @sprint_name %>" autofocus />
-  
+  <input
+    type="text"
+    name="name"
+    placeholder="Sprint name"
+    value="<%= @sprint_name %>"
+    required
+    pattern="\S+.*"
+    autofocus
+    />
+
   <%= if @already_exists do %>
     <div class="error">Sorry, that name is taken!</div>
   <% end %>
