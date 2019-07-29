@@ -3,7 +3,7 @@ defmodule ChippyWeb.SprintLive.Show do
 
   alias Phoenix.PubSub
   alias Phoenix.Socket.Broadcast
-  alias Chippy.{SprintServer}
+  alias Chippy.SprintServer
   alias ChippyWeb.Presence
   alias ChippyWeb.Router.Helpers, as: Routes
 
