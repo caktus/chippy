@@ -3,7 +3,7 @@
 <section class="chips container">
   <%= if any_projects?(@sprint) do %>
     <div class="row project">
-      <div class="column column-10 column-offset-20">
+      <div class="column column-15 column-offset-20">
         <div class="row"><b>Hours Allocated</b></div>
       </div>
     </div>
@@ -22,12 +22,12 @@
           </button>
         </div>
       </div>
-      <div class="column column-10">
+      <div class="column column-20">
         <%= total_hours_allocated_to_project(allocation) %>
         /
         <%= hour_limit(@sprint, project_name) %>
       </div>
-      <div class="column column-60">
+      <div class="column column-50">
         <%= for {name, chips} <- allocation do %>
           <div class="row row-chips">
             <%= for _i <- 1..chips do %>
@@ -38,7 +38,7 @@
       </div>
       <div class="column column-10">
         <button phx-click="delete_project" phx-value="<%= project_name %>" class="button button-warning">
-          Delete Project
+          X
         </button>
       </div>
     </div>
