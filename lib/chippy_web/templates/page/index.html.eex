@@ -11,9 +11,9 @@
     </li>
     <li>Join an existing sprint</li>
     <ul>
-    <%= for key <- @sprints do %>
-      <li><%= link "Sprint #{key}", to: Routes.page_path(@conn, :sprint, key) %></li>
-    <% end %>
+      <%= for key <- @sprints do %>
+        <li><%= link "Sprint #{key}", to: Routes.page_path(@conn, :sprint, key) %></li>
+      <% end %>
     </ul>
   </ul>
 </section>

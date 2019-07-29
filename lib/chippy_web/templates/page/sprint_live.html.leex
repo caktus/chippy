@@ -1,7 +1,7 @@
 <% alias Chippy.Sprint %>
 
 <section class="chips container">
-  <%= if !Enum.empty?(Sprint.sorted_allocations(@sprint)) do %>
+  <%= if any_projects?(@sprint) do %>
     <div class="row project">
       <div class="column column-10 column-offset-20">
         <div class="row"><b>Hours Allocated</b></div>
@@ -23,7 +23,8 @@
         </div>
       </div>
       <div class="column column-10">
-        <%= allocation |> Map.values |> Enum.map(&(&1 * @hours_per_chip)) |> Enum.sum %> /
+        <%= total_hours_allocated_to_project(allocation) %>
+        /
         <%= hour_limit(@sprint, project_name) %>
       </div>
       <div class="column column-60">
