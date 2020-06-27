@@ -1,0 +1,3 @@
+git+https://github.com/caktus/invoke-kubesae@0.0.5#egg=invoke-kubesae
+openshift<0.12
+kubernetes-validate<1.19

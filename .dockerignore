@@ -1,0 +1,11 @@
+assets/node_modules
+_build
+.circleci
+deps
+Dockerfile
+.dockerignore
+.elixir_ls
+erl_crash.dump
+.git
+requirements.txt
+tasks.py

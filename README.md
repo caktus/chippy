@@ -11,6 +11,34 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 ## Deployment
 
+Chippy is deployed to Caktus' Kubernetes cluster.
+
+We use [invoke-kubesae](https://github.com/caktus/invoke-kubesae) for deployment, so
+you'll need a Python virtualenv. Install the requirements:
+
+```
+pip install -U -r requirements.txt
+```
+
+To build the image:
+
+```
+inv image.build
+```
+
+The env vars needed by the docker image are:
+
+* HOSTNAME=chippy-staging.caktus-built.com
+* PORT=4000
+* DATABASE_URL=postgres://username:password@db_host:5432/chippy
+* LIVE_VIEW_SIGNING_SALT=supersecret
+* SECRET_KEY_BASE=supersecret
+* MIGRATE=on
+
+
+FIXME: The following part of this section is currently true, but will be removed once the migration to
+kubernetes is complete.
+
 Chippy is deployed to Caktus' [Dokku](http://dokku.viewdocs.io/dokku/) infrastructure. This document assumes that
 you are familiar with Caktus' [Dokku Developer Docs](https://caktus.github.io/developer-documentation/dokku.html)
 and have an account on the Dokku server.
@@ -68,7 +96,7 @@ version control. As an example, if you want the app to connect to Postgresql via
 sockets, add this to `config/dev.secret.exs`:
 
 ```
-use Mix.Config
+import Config
 
 config :chippy, Chippy.Repo,
   socket_dir: "/var/run/postgresql",
