@@ -35,10 +35,10 @@ ns.add_task(production)
 ns.configure(
     {
         "app": "chippy",
-        # FIXME below here
         "aws": {"region": "us-east-1",},
-        "cluster": "Chippy-cluster",
-        # "repository": "354308461188.dkr.ecr.us-west-2.amazonaws.com/pressweb",
+        # FIXME
+        # "cluster": "caktus-chippy-cluster",
+        "repository": "472354598015.dkr.ecr.us-east-1.amazonaws.com/chippy",
         "run": {"echo": True,},
     }
 )
