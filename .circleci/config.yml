@@ -69,6 +69,8 @@ jobs:
           POSTGRES_PASSWORD:
     steps:
       - checkout
+      - run: mix local.hex --force
+      - run: mix local.rebar --force
       - restore_cache:
           keys:  # list of cache keys, in decreasing specificity
             - v1-mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
