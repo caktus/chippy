@@ -9,6 +9,28 @@ To start your Phoenix server:
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
+## Local dev setup
+
+The steps above should get you running. You can also make local configurations which won't go into
+version control. As an example, if you want the app to connect to Postgresql via unix domain
+sockets, add this to `config/dev.secret.exs`:
+
+```
+import Config
+
+config :chippy, Chippy.Repo,
+  socket_dir: "/var/run/postgresql",
+  username: "vkurup",
+  password: "",
+  database: "chippy_dev",
+```
+
+To run the Phoenix server, while also having a command line to inspect stuff:
+
+```
+iex -S mix phx.server
+```
+
 ## Deployment
 
 Chippy is deployed to Caktus' Kubernetes cluster.
@@ -20,21 +42,28 @@ you'll need a Python virtualenv. Install the requirements:
 pip install -U -r requirements.txt
 ```
 
-To build the image:
+Get an AWS account on the Caktus AWS subaccount and create a profile named chippy.
+You'll need to fill in your access key ID and your secret key:
 
 ```
-inv image.build
+aws --profile chippy configure
+...
 ```
 
-The env vars needed by the docker image are:
+[Install kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 
-* HOSTNAME=chippy-staging.caktus-built.com
-* PORT=4000
-* DATABASE_URL=postgres://username:password@db_host:5432/chippy
-* LIVE_VIEW_SIGNING_SALT=supersecret
-* SECRET_KEY_BASE=supersecret
-* MIGRATE=on
+Login to the docker registry and configure kubectl:
 
+```
+inv aws.docker-login
+inv.aws.configure-eks-kubeconfig
+```
+
+To deploy the current working directory to staging:
+
+```
+inv staging image.push deploy.deploy
+```
 
 FIXME: The following part of this section is currently true, but will be removed once the migration to
 kubernetes is complete.
@@ -89,27 +118,158 @@ If you want to deploy a branch:
 
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
-## Local dev setup
+## Provisioning
 
-The steps above should get you running. You can also make local configurations which won't go into
-version control. As an example, if you want the app to connect to Postgresql via unix domain
-sockets, add this to `config/dev.secret.exs`:
+These are the main steps used to create the staging namespace in the Caktus cluster.
+We'll need to do them again for production or for any other environment we'd like to add.
 
-```
-import Config
+### Set up the python requirements
 
-config :chippy, Chippy.Repo,
-  socket_dir: "/var/run/postgresql",
-  username: "vkurup",
-  password: "",
-  database: "chippy_dev",
-```
-
-To run the Phoenix server, while also having a command line to inspect stuff:
+* We'll use some python tools to help us with the deployment, so create a Python3
+  virtualenv and install the requirements:
 
 ```
-iex -S mix phx.server
+pip install -U -r requirements.txt
 ```
+
+### Get AWS access
+
+* Get access to Caktus Cluster subaccount, which will give you an AWS access key ID and
+  an AWS secret key. Use those to create an AWS profile named "chippy":
+
+```
+aws --profile chippy configure
+```
+
+* Make sure that your profile is set to that profile whenever you're doing
+  deployment-related work:
+
+```
+export AWS_PROFILE=chippy
+```
+
+### Set up docker registry
+
+* These steps only needs to be done once. We'll use the same repository for staging and
+  production images:
+
+```
+aws ecr create-repository --repository-name chippy
+```
+
+* Set `repository` in tasks.py to the repository URI.
+
+* Test it out:
+
+```
+inv aws.docker-login
+inv image.push
+```
+
+* Check to be sure the image was pushed:
+
+```
+aws ecr list-images --repository-name chippy
+```
+
+### Get access to cluster
+
+```
+inv aws.configure-eks-kubeconfig
+```
+
+### Create a DB on the existing RDS instance
+
+* Get the RDS params you'll need:
+
+```
+aws rds describe-db-instances
+```
+
+* From that output, get `MasterUsername`, `DBName`, and `Endpoint.Address`.
+* Get the `MasterPassword` from the LastPass entry.
+* Choose or generate a `ChippyDbPassword` that you'll use for chippy. Save that somewhere so that you
+  can encrypt it later in the process.
+
+* Then create the DB with the proper permissions:
+
+```
+$ inv pod.debian
+root@debian:/# apt update && apt install postgresql-client -y
+root@debian:/# psql postgres://{MasterUsername}:{MasterPassword}@{Endpoint.Address}:5432/{DBName}
+=> CREATE DATABASE chippy_staging;
+=> CREATE ROLE chippy_staging WITH LOGIN NOSUPERUSER INHERIT CREATEDB NOCREATEROLE NOREPLICATION PASSWORD '<ChippyDbPassword>';
+=> GRANT CONNECT ON DATABASE chippy_staging TO chippy_staging;
+=> GRANT ALL PRIVILEGES ON DATABASE chippy_staging TO chippy_staging;
+```
+
+### Set up deploy directory structure
+
+* Most of this section only needs to be done once. If you are adding a new environment,
+  then copy the `host_vars/staging.yaml` file to then env name that you are creating and
+  update the values in it. Then add the new environment to `inventory`.
+
+* Copy the deploy directory from an existing Caktus k8s project.
+
+* It should look something like this:
+
+  ```
+  chippy/deploy:
+    ansible.cfg
+    deploy.yaml
+    group_vars/
+      k8s.yaml
+    host_vars/
+      staging.yaml
+    inventory
+    requirements.yaml
+  ```
+
+### Point your desired domain at the load balancer
+
+* Find the load balancer URL:
+
+  ```
+  kubectl get svc -n ingress-nginx
+  ```
+
+* Copy the EXTERNAL-IP, which is the load balancer URL.
+
+* Go to Cloudflare and create a CNAME from your desired subdomain pointing to that URL.
+
+### Set up vault password
+
+* These instructions only need to be done once. We use the same vault password for
+  staging and production.
+
+* Generate a long password and save it to AWS with this command:
+
+  ```
+  aws secretsmanager create-secret --name chippy-ansible-vault-password --secret-string <long-secret>
+  ```
+
+* Record the ARN that is returned, you'll need that for setting up CI later
+
+### Create the k8s service account and get the secret API key
+
+* Follow the instructions in [the Django k8s
+  repo](https://github.com/caktus/ansible-role-django-k8s) to create the service account
+  that will do the deploys, and get the API key for that account.
+
+* This involves running the deploy once, which will output instructions to encrypt and add
+  `k8s_auth_api_key` to your `host_vars/<env>.yaml` file
+
+* Use this command to encrypt that value and any other value in `host_vars/<env>.yaml`
+  that needs encrypting:
+
+  ```
+  cd deploy
+  ansible-vault encrypt_string <secret>
+
+  ```
+
+* Finally, do the deploy again, and it should work.
+
 
 ## Learn more
 

@@ -41,5 +41,8 @@ npm-debug.log
 # variables.
 /config/*.secret.exs
 
+# k8s deploy
+deploy/roles/
+
 # IDE files
 .elixir_ls

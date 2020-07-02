@@ -36,9 +36,8 @@ ns.configure(
     {
         "app": "chippy",
         "aws": {"region": "us-east-1",},
-        # FIXME
-        # "cluster": "caktus-chippy-cluster",
+        "cluster": "caktus-saguaro-cluster",
         "repository": "472354598015.dkr.ecr.us-east-1.amazonaws.com/chippy",
-        "run": {"echo": True,},
+        "run": {"echo": True, "pty": True},
     }
 )

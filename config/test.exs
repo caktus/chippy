@@ -15,4 +15,6 @@ config :chippy, Chippy.Repo,
   pool: Ecto.Adapters.SQL.Sandbox
 
 # Allow config to be overriden locally
-import_config "test.secret.exs"
+if File.exists?("config/test.secret.exs") do
+  import_config "test.secret.exs"
+end
