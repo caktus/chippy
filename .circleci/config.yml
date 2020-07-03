@@ -125,7 +125,7 @@ jobs:
               ENV=production
             fi
             echo deploying $CIRCLE_BRANCH to $ENV
-            inv $ENV image.push deploy.deploy
+            inv $ENV image deploy
 
       - slack/status:
           success_message: ":rocket: Deployed ${CIRCLE_BRANCH} branch. <${CIRCLE_BUILD_URL}|Deploy Status> :success:"

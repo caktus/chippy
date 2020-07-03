@@ -1,5 +1,15 @@
 # Chippy
 
+## License
+
+This application is released under the BSD License. See the
+[LICENSE](https://github.com/caktus/ansible-role-k8s-web-cluster/blob/master/LICENSE)
+file for more details.
+
+Development sponsored by [Caktus Consulting Group, LLC](http://www.caktusgroup.com/services>).
+
+## Quickstart
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
@@ -33,7 +43,14 @@ iex -S mix phx.server
 
 ## Deployment
 
-Chippy is deployed to Caktus' Kubernetes cluster.
+### Automatic CI/CD
+
+Chippy is automatically deployed to Caktus' Kubernetes cluster using CircleCI.
+
+Every push to ``develop`` is automatically deployed to staging, and every push to
+``master`` is automatically deployed to production. (FIXME, not true yet!)
+
+### Manual deployment
 
 We use [invoke-kubesae](https://github.com/caktus/invoke-kubesae) for deployment, so
 you'll need a Python virtualenv. Install the requirements:
@@ -62,7 +79,7 @@ inv.aws.configure-eks-kubeconfig
 To deploy the current working directory to staging:
 
 ```
-inv staging image.push deploy.deploy
+inv staging image deploy
 ```
 
 FIXME: The following part of this section is currently true, but will be removed once the migration to
@@ -121,7 +138,8 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 ## Provisioning
 
 These are the main steps used to create the staging namespace in the Caktus cluster.
-We'll need to do them again for production or for any other environment we'd like to add.
+We'll need to do some of them again for production or for any other environment we'd
+like to add.
 
 ### Set up the python requirements
 
@@ -150,7 +168,7 @@ export AWS_PROFILE=chippy
 
 ### Set up docker registry
 
-* These steps only needs to be done once. We'll use the same repository for staging and
+* These steps only need to be done once. We'll use the same repository for staging and
   production images:
 
 ```
@@ -217,6 +235,7 @@ root@debian:/# psql postgres://{MasterUsername}:{MasterPassword}@{Endpoint.Addre
   chippy/deploy:
     ansible.cfg
     deploy.yaml
+    echo-vault-pass.sh
     group_vars/
       k8s.yaml
     host_vars/
@@ -270,6 +289,22 @@ root@debian:/# psql postgres://{MasterUsername}:{MasterPassword}@{Endpoint.Addre
 
 * Finally, do the deploy again, and it should work.
 
+### Setting up Circle CI deployment
+
+This has already been done, and should not need to be done again for this repo. The same
+IAM user that we created can do both staging and production deploys.
+
+* Use the [k8s web cluster role to create a limited IAM
+  user](https://github.com/caktus/ansible-role-k8s-web-cluster#adding-a-limited-aws-iam-user-for-ci-deploys)
+
+* Create an AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY pair in the AWS console.
+
+* Enter those values, and AWS_REGION="us-east-1" into the [Circle CI environment
+  variables console](https://app.circleci.com/settings/project/github/caktus/chippy/environment-variables)
+
+* Those AWS creds are not stored anywhere else, and they are not retrievable from the
+  CircleCI interface. The only way to "view" the secret access key would be to
+  regenerate a new pair.
 
 ## Learn more
 
