@@ -48,7 +48,7 @@ iex -S mix phx.server
 Chippy is automatically deployed to Caktus' Kubernetes cluster using CircleCI.
 
 Every push to ``develop`` is automatically deployed to staging, and every push to
-``master`` is automatically deployed to production. (FIXME, not true yet!)
+``master`` is automatically deployed to production.
 
 ### Manual deployment
 
@@ -82,64 +82,11 @@ To deploy the current working directory to staging:
 inv staging image deploy
 ```
 
-FIXME: The following part of this section is currently true, but will be removed once the migration to
-kubernetes is complete.
+## Setting up a new namespace on the cluster
 
-Chippy is deployed to Caktus' [Dokku](http://dokku.viewdocs.io/dokku/) infrastructure. This document assumes that
-you are familiar with Caktus' [Dokku Developer Docs](https://caktus.github.io/developer-documentation/dokku.html)
-and have an account on the Dokku server.
-
-Create a new app:
-
-```
-   $ ssh dokku apps:create {{ project_name }}
-   Creating {{ project_name }}... done
-```
-
-Create and link the database:
-
-```
-    $ ssh dokku postgres:create {{ project_name }}-database
-    ...
-    $ ssh dokku postgres:link {{ project_name }}-database {{ project_name }}
-    ...
-```
-
-Set required environment variables:
-
-```
-    $ ssh dokku config:set {{ project_name }} HOSTNAME={{ project_name }}.caktustest.net
-    $ ssh dokku config:set {{ project_name }} SECRET_KEY_BASE=<64char string>
-```
-
-Configure SSL via the Let's Encrypt Plugin:
-
-```
-    $ ssh dokku config:set --no-restart {{ project_name }} DOKKU_LETSENCRYPT_EMAIL=your@email.tld
-    $ ssh dokku letsencrypt {{ project_name }}
-    $ ssh dokku letsencrypt:cron-job --add {{ project_name }}
-```
-
-Configure the Git repository and deploy!
-
-```
-    $ git remote add dokku dokku:chippy
-    $ git push dokku master
-```
-
-If you want to deploy a branch:
-
-```
-    $ git push dokku <branch-name>:master
-```
-
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Provisioning
-
-These are the main steps used to create the staging namespace in the Caktus cluster.
-We'll need to do some of them again for production or for any other environment we'd
-like to add.
+These are the main steps used to create the staging namespace in the Caktus cluster (and
+then repeated to create the production namespace). We'll need to do some of them again
+for any other environment we'd like to add.
 
 ### Set up the python requirements
 

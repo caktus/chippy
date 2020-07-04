@@ -129,7 +129,7 @@ jobs:
 
       - slack/status:
           success_message: ":rocket: Deployed ${CIRCLE_BRANCH} branch. <${CIRCLE_BUILD_URL}|Deploy Status> :success:"
-          failure_message: ":sadpanda: Failed to deploy ${CIRCLE_BRANCH} branch. <${CIRCLE_BUILD_URL}|Deploy Status> :red-circle:"
+          failure_message: ":sadpanda: Failed to deploy ${CIRCLE_BRANCH} branch. <${CIRCLE_BUILD_URL}|Deploy Status> :red_circle:"
           include_project_field: false
           include_job_number_field: false
           include_visit_job_action: false
@@ -150,7 +150,5 @@ workflows:
           filters:
             branches:
               only:
-                # FIXME: switch to just develop and master, once other branches are merged
                 - develop
-                - k8s-staging
                 - master
