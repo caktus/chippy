@@ -1,6 +1,7 @@
 env_name: "production"
 
 k8s_domain_names:
+- chippy.cloud
 - chippy-production.caktus-built.com
 
 k8s_container_image_tag: "{{ env_name }}"
