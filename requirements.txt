@@ -1,0 +1,6 @@
+awscli<1.19
+boto<2.50
+boto3<1.15
+git+https://github.com/caktus/invoke-kubesae@0.0.5#egg=invoke-kubesae
+kubernetes-validate<1.19
+openshift<0.12

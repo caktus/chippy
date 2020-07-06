@@ -1,5 +1,0 @@
-# app_root/compile
-cd $phoenix_dir
-cd assets && npm install && npm run deploy && cd ..
-mix "${phoenix_ex}.digest" #use the ${phoenix_ex} variable instead of hardcoding phx or phoenix
-

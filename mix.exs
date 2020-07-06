@@ -44,7 +44,8 @@ defmodule Chippy.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0.2"},
       {:phoenix_live_view, "~> 0.1"},
-      {:colorify, "~> 0.1.0"}
+      {:colorify, "~> 0.1.0"},
+      {:observer_cli, "~> 1.5"}
     ]
   end
 

@@ -1,55 +1,35 @@
-version: 2  # use CircleCI 2.0 instead of CircleCI Classic
-jobs:  # basic units of work in a run
-  build:  # runs not using Workflows must have a `build` job as entry point
-    parallelism: 1  # run only one instance of this job in parallel
-    docker:  # run the steps with Docker
-      - image: circleci/elixir:1.8.0  # ...with this image as the primary container; this is where all `steps` will run
-        environment:  # environment variables for primary container
+version: 2.1
+orbs:
+  slack: circleci/slack@3.4.2
+
+jobs:
+  build-test-elixir:
+    docker:
+      - image: circleci/elixir:1.10
+        environment:
           MIX_ENV: test
           DATABASE_URL: postgres://chippy@localhost/chippy_test
-      - image: circleci/postgres:10.1-alpine  # database image
-        environment:  # environment variables for database
+      - image: circleci/postgres:10.1-alpine
+        environment:
           POSTGRES_USER: chippy
           POSTGRES_DB: chippy_test
           POSTGRES_PASSWORD:
-
-    working_directory: ~/app  # directory where steps will run
-
-    steps:  # commands that comprise the `build` job
-      - checkout  # check out source code to working directory
-
-      - run:
-          name: Create blank test config file
-          command: echo -e > config/test.secret.exs
-
-      - run: mix local.hex --force  # install Hex locally (without prompt)
-      - run: mix local.rebar --force  # fetch a copy of rebar (without prompt)
-
-      - restore_cache:  # restores saved mix cache
-      # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
-          keys:  # list of cache keys, in decreasing specificity
+    steps:
+      - checkout
+      - run: mix local.hex --force
+      - run: mix local.rebar --force
+      - restore_cache:
+          keys:
             - v1-mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
-            - v1-mix-cache-{{ .Branch }}
-            - v1-mix-cache
-      - restore_cache:  # restores saved build cache
+      - restore_cache:
           keys:
             - v1-build-cache-{{ .Branch }}
-            - v1-build-cache
-      - run: mix do deps.get, compile  # get updated dependencies & compile them
-      - save_cache:  # generate and store mix cache
+      - run: mix do deps.get, compile
+      - save_cache:
           key: v1-mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
           paths: "deps"
-      - save_cache:  # make another, less specific cache
-          key: v1-mix-cache-{{ .Branch }}
-          paths: "deps"
-      - save_cache:  # you should really save one more cache (just in case)
-          key: v1-mix-cache
-          paths: "deps"
-      - save_cache: # don't forget to save a *build* cache, too
+      - save_cache:
           key: v1-build-cache-{{ .Branch }}
-          paths: "_build"
-      - save_cache: # and one more build cache for good measure
-          key: v1-build-cache
           paths: "_build"
 
       - run:  # special utility that stalls main process until DB is ready
@@ -57,9 +37,96 @@ jobs:  # basic units of work in a run
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
 
       - run: mix format --check-formatted
-
       - run: mix test
 
-      - store_test_results:  # upload junit test results for display in Test Summary
-          # Read more: https://circleci.com/docs/2.0/collect-test-data/
-          path: _build/test/lib/chippy # Replace with the name of your :app
+      - store_test_results:
+          path: _build/test/lib/chippy
+
+      - slack/status:
+          success_message: ":caktus: ${CIRCLE_BRANCH} tests passed. <${CIRCLE_BUILD_URL}|Build> :successful:"
+          failure_message: ":sadcactus: ${CIRCLE_BRANCH} tests failed. <${CIRCLE_BUILD_URL}|Build> :failed:"
+          include_project_field: false
+          include_job_number_field: false
+          include_visit_job_action: false
+
+  build-python:
+    docker:
+      - image: circleci/python:3.7-buster
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-pip-{{ checksum "requirements.txt" }}
+      - run:
+          name: Set up python environment
+          command: |
+            python3 -m venv env
+            . env/bin/activate
+            pip install -r requirements.txt
+      - save_cache:
+          key: v1-pip-{{ checksum "requirements.txt" }}
+          paths:
+            - "env"
+
+  deploy:
+    docker:
+      - image: circleci/python:3.7-buster
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache:
+          key: v1-pip-{{ checksum "requirements.txt" }}
+
+      - run:
+          # https://cloud.google.com/sdk/docs/quickstart-debian-ubuntu
+          name: Install kubectl
+          command: |
+            echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+            curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+            sudo apt-get update -y && sudo apt-get install -y kubectl
+
+      - run:
+          name: Login to docker registry
+          command: |
+            . env/bin/activate
+            inv aws.docker-login
+
+      - slack/notify:
+          message: ":deploying: ${CIRCLE_BRANCH} branch :deploying:"
+          color: "#3346FF"
+          include_project_field: false
+          include_job_number_field: false
+          include_visit_job_action: false
+
+      - run:
+          name: Build, tag, push and deploy image
+          command: |
+            . env/bin/activate
+            ENV=staging
+            if [[ "$CIRCLE_BRANCH" = "master" ]]; then
+              ENV=production
+            fi
+            echo deploying $CIRCLE_BRANCH to $ENV
+            inv $ENV image deploy
+
+      - slack/status:
+          success_message: ":rocket: Deployed ${CIRCLE_BRANCH} branch. <${CIRCLE_BUILD_URL}|Deploy Status> :success:"
+          failure_message: ":sadpanda: Failed to deploy ${CIRCLE_BRANCH} branch. <${CIRCLE_BUILD_URL}|Deploy Status> :red_circle:"
+          include_project_field: false
+          include_job_number_field: false
+          include_visit_job_action: false
+
+workflows:
+  version: 2
+  build-test-and-deploy:
+    jobs:
+      - build-test-elixir
+      - build-python
+      - deploy:
+          requires:
+            - build-test-elixir
+            - build-python
+          filters:
+            branches:
+              only:
+                - develop
+                - master

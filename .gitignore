@@ -40,3 +40,9 @@ npm-debug.log
 # secrets files as long as you replace their contents by environment
 # variables.
 /config/*.secret.exs
+
+# k8s deploy
+deploy/roles/
+
+# IDE files
+.elixir_ls
