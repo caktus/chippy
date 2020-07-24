@@ -1,13 +1,13 @@
 defmodule ChippyWeb.SprintLive.New do
-  use Phoenix.LiveView
+  use ChippyWeb, :live_view
+
   alias Chippy.{SprintServer, SprintSupervisor}
-  alias ChippyWeb.Router.Helpers, as: Routes
 
   def render(assigns) do
     ChippyWeb.PageView.render("sprint_live_new.html", assigns)
   end
 
-  def mount(_session, socket) do
+  def mount(_params, _session, socket) do
     {:ok,
      assign(socket, %{
        already_exists: false,
@@ -36,10 +36,10 @@ defmodule ChippyWeb.SprintLive.New do
 
     case new_sprint do
       {:ok, _pid} ->
-        {:stop,
+        {:noreply,
          socket
          |> put_flash(:info, "Sprint created! Let's place the chips!")
-         |> redirect(to: Routes.page_path(ChippyWeb.Endpoint, :sprint, name))}
+         |> push_redirect(to: Routes.live_path(socket, ChippyWeb.SprintLive.Show, name))}
 
       {:error, the_error} ->
         {:noreply, assign(socket, other_errors: "There was a problem ... #{the_error}")}

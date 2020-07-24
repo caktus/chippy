@@ -1,45 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Chippy · Phoenix Framework</title>
-    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
-  </head>
-  <body>
-    <header>
-      <section class="container">
-        <nav role="navigation">
-          <ul>
-            <li>
-              <%= link(
-                case Plug.Conn.get_session(@conn, :user_id) || "" do
-                  "" -> "Edit profile"
-                  user_id -> user_id
-                end,
-                to: Routes.page_path(@conn, :profile, next: @conn.request_path)
-              ) %>
-            </li>
-          </ul>
-        </nav>
-        <%= link "Welcome to Chippy!", to: Routes.page_path(@conn, :index)  %>
-      </section>
-    </header>
-    <main role="main" class="container">
-      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
-      <%= render @view_module, @view_template, assigns %>
-    </main>
-    <footer>
-      <section class="container">
-        <p>
-          Chippy is built using <a href="https://elixir-lang.org/" target="_blank">Elixir</a>,
-          on top of <a href="https://phoenixframework.org/" target="_blank">Phoenix</a>,
-          and shipped by <a href="https://caktusgroup.com/" target="_blank">Caktus Group</a>.
-        </p>
-      </section>
-    </footer>
-    <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
-  </body>
-</html>
+<main role="main" class="container">
+  <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+  <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+  <%= @inner_content %>
+</main>

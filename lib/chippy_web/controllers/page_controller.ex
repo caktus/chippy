@@ -35,11 +35,7 @@ defmodule ChippyWeb.PageController do
       user_id when user_id != "" ->
         LiveController.live_render(
           conn,
-          ChippyWeb.SprintLive.Show,
-          session: %{
-            user_id: user_id,
-            sprint_id: sprint_id
-          }
+          ChippyWeb.SprintLive.Show
         )
 
       _ ->

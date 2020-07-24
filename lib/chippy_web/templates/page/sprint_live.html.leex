@@ -1,9 +1,14 @@
 <% alias Chippy.Sprint %>
 
+<h3>Sprint <%= @sprint_id %></h3>
+
 <section class="chips container">
   <%= if any_projects?(@sprint) do %>
     <div class="row project">
-      <div class="column column-15 column-offset-20">
+      <div class="column column-20">
+        <div class="row"><b>Project</b></div>
+      </div>
+      <div class="column column-15">
         <div class="row"><b>Hours Allocated</b></div>
       </div>
     </div>
@@ -14,10 +19,10 @@
       <div class="column column-20">
         <div class="row"><%= project_name %></div>
         <div class="row">
-          <button phx-click="remove_chip" phx-value="<%= project_name %>" class="button button-small button-clear">
+          <button phx-click="remove_chip" phx-value-project_name="<%= project_name %>" class="button button-small button-clear">
             -
           </button>
-          <button phx-click="add_chip" phx-value="<%= project_name %>" class="button button-small button-clear">
+          <button phx-click="add_chip" phx-value-project_name="<%= project_name %>" class="button button-small button-clear">
             +
           </button>
         </div>
@@ -37,7 +42,7 @@
         <% end %>
       </div>
       <div class="column column-10">
-        <button phx-click="delete_project" phx-value="<%= project_name %>" class="button button-warning">
+        <button phx-click="delete_project" phx-value-project_name="<%= project_name %>" class="button button-warning">
           X
         </button>
       </div>
