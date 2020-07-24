@@ -10,6 +10,8 @@ defmodule Chippy.Application do
     children = [
       # Start the Ecto repository
       Chippy.Repo,
+      # Start the PubSub system
+      {Phoenix.PubSub, name: Chippy.PubSub},
       # Start the endpoint when the application starts
       ChippyWeb.Endpoint,
       # Starts a worker by calling: Chippy.Worker.start_link(arg)
