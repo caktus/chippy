@@ -58,6 +58,18 @@ defmodule ChippyWeb.SprintLive.Show do
     end
   end
 
+  def mount(%{"sid" => sprint_id}, _session, socket) do
+    {:ok,
+     socket
+     |> put_flash(:error, "Please set a user name before accessing a sprint.")
+     |> redirect(
+       to:
+         Routes.page_path(socket, :profile,
+           next: Routes.live_path(socket, ChippyWeb.SprintLive.Show, sprint_id)
+         )
+     )}
+  end
+
   def handle_event(
         "lookup_project",
         %{"project_name" => project_name},
