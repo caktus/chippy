@@ -5,10 +5,10 @@ defmodule ChippyWeb.Router do
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
-    plug :fetch_flash
-    plug Phoenix.LiveView.Flash
+    plug :fetch_live_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :put_root_layout, {ChippyWeb.LayoutView, :root}
   end
 
   pipeline :api do
@@ -22,7 +22,7 @@ defmodule ChippyWeb.Router do
     get "/profile", PageController, :profile
     post "/profile", PageController, :profile_save
     live "/sprint/new", SprintLive.New
-    get "/sprint/:sid", PageController, :sprint
+    live "/sprint/:sid", SprintLive.Show
   end
 
   # Other scopes may use custom stacks.

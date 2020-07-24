@@ -1,6 +1,5 @@
 defmodule ChippyWeb.PageController do
   use ChippyWeb, :controller
-  alias Phoenix.LiveView.Controller, as: LiveController
 
   alias Chippy.SprintSupervisor
   alias ChippyWeb.Router.Helpers, as: Routes
@@ -28,26 +27,5 @@ defmodule ChippyWeb.PageController do
     |> put_session(:user_id, String.trim(user_id))
     |> put_flash(:info, "Profile saved successfully.")
     |> redirect(to: Map.get(form, "next", Routes.page_path(conn, :index)))
-  end
-
-  def sprint(conn, %{"sid" => sprint_id}) do
-    case get_session(conn, :user_id) || "" do
-      user_id when user_id != "" ->
-        LiveController.live_render(
-          conn,
-          ChippyWeb.SprintLive.Show,
-          session: %{
-            user_id: user_id,
-            sprint_id: sprint_id
-          }
-        )
-
-      _ ->
-        conn
-        |> put_flash(:error, "Please set a user name before accessing a sprint.")
-        |> redirect(
-          to: Routes.page_path(conn, :profile, next: Routes.page_path(conn, :sprint, sprint_id))
-        )
-    end
   end
 end

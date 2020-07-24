@@ -1,11 +1,10 @@
 defmodule ChippyWeb.SprintLive.Show do
-  use Phoenix.LiveView
+  use ChippyWeb, :live_view
 
   alias Phoenix.PubSub
   alias Phoenix.Socket.Broadcast
   alias Chippy.SprintServer
   alias ChippyWeb.Presence
-  alias ChippyWeb.Router.Helpers, as: Routes
 
   def render(assigns) do
     assigns = Map.put(assigns, :hours_per_chip, Application.get_env(:chippy, :hours_per_chip))
@@ -31,7 +30,7 @@ defmodule ChippyWeb.SprintLive.Show do
     |> Map.merge(user_chip_counts(sprint_id), fn _k, a, b -> Map.merge(a, b) end)
   end
 
-  def mount(%{user_id: user_id, sprint_id: sprint_id}, socket) do
+  def mount(%{"sid" => sprint_id}, %{"user_id" => user_id}, socket) do
     pid_or_nil = sprint_id |> SprintServer.via_tuple() |> GenServer.whereis()
 
     case pid_or_nil do
@@ -52,11 +51,23 @@ defmodule ChippyWeb.SprintLive.Show do
          })}
 
       nil ->
-        {:stop,
+        {:ok,
          socket
          |> put_flash(:error, "Sprint not found.")
          |> redirect(to: Routes.page_path(ChippyWeb.Endpoint, :index))}
     end
+  end
+
+  def mount(%{"sid" => sprint_id}, _session, socket) do
+    {:ok,
+     socket
+     |> put_flash(:error, "Please set a user name before accessing a sprint.")
+     |> redirect(
+       to:
+         Routes.page_path(socket, :profile,
+           next: Routes.live_path(socket, ChippyWeb.SprintLive.Show, sprint_id)
+         )
+     )}
   end
 
   def handle_event(
@@ -82,7 +93,7 @@ defmodule ChippyWeb.SprintLive.Show do
 
   def handle_event(
         "delete_project",
-        project_name,
+        %{"project_name" => project_name},
         %{assigns: %{sprint_id: sprint_id}} = socket
       ) do
     new_sprint = SprintServer.delete_project(sprint_id, project_name)
@@ -91,7 +102,7 @@ defmodule ChippyWeb.SprintLive.Show do
 
   def handle_event(
         "add_chip",
-        project_name,
+        %{"project_name" => project_name},
         %{assigns: %{sprint_id: sprint_id, your_name: person_name}} = socket
       ) do
     new_sprint = SprintServer.add_chip(sprint_id, project_name, person_name)
@@ -100,7 +111,7 @@ defmodule ChippyWeb.SprintLive.Show do
 
   def handle_event(
         "remove_chip",
-        project_name,
+        %{"project_name" => project_name},
         %{assigns: %{sprint_id: sprint_id, your_name: person_name}} = socket
       ) do
     new_sprint = SprintServer.remove_chip(sprint_id, project_name, person_name)
