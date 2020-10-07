@@ -23,7 +23,12 @@ defmodule ChippyWeb.SprintLive.New do
   end
 
   def handle_event("create", %{"name" => name}, socket) do
-    name = String.trim(name)
+    # Since we use name in our URL, don't allow '/' in them or the router gets confused.
+    # Just change them to a space for now.
+    name =
+      name
+      |> String.trim
+      |> String.replace("/", " ")
 
     new_sprint =
       case name do
