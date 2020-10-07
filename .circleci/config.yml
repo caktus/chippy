@@ -43,8 +43,8 @@ jobs:
           path: _build/test/lib/chippy
 
       - slack/status:
-          success_message: ":caktus: ${CIRCLE_BRANCH} tests passed. <${CIRCLE_BUILD_URL}|Build> :successful:"
-          failure_message: ":sadcactus: ${CIRCLE_BRANCH} tests failed. <${CIRCLE_BUILD_URL}|Build> :failed:"
+          success_message: ":caktus: ${CIRCLE_BRANCH} branch tests passed. <${CIRCLE_BUILD_URL}|View Build> :successful:"
+          failure_message: ":sadcactus: ${CIRCLE_BRANCH} branch tests failed. <${CIRCLE_BUILD_URL}|View Build> :failed:"
           include_project_field: false
           include_job_number_field: false
           include_visit_job_action: false
