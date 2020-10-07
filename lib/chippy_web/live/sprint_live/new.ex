@@ -27,7 +27,7 @@ defmodule ChippyWeb.SprintLive.New do
     # Just change them to a space for now.
     name =
       name
-      |> String.trim
+      |> String.trim()
       |> String.replace("/", " ")
 
     new_sprint =
