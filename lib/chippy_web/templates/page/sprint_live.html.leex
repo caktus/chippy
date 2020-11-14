@@ -49,42 +49,38 @@
     </div>
   <% end %>
 
-  <form id="new-project-form" phx-change="lookup_project" phx-submit="create_project">
+  <%= f = form_for @changeset, "#",
+      phx_submit: "create_project",
+      phx_change: "lookup_project" %>
     <div class="row">
-      <div class="column column-40">
+      <div class="column column-20">
         <div class="row">
-          <input
-            type="text"
-            name="project_name"
-            placeholder="Project name"
-            pattern="\S+.*"
-            required
-            autofocus
-          />
-          <input
-            type="number"
-            name="hour_limit"
-            placeholder="PM Allocation"
-          />
+          <%= text_input f, :name,
+              placeholder: "Name",
+              autofocus: "on",
+              autocomplete: "off" %>
+        </div>
+        <div class="row">
+          <%= error_tag f, :name %>
+        </div>
+      </div>
+      <div class="column column-20">
+        <div class="row">
+          <%= number_input f, :hour_limit,
+              placeholder: "PM Allocation" %>
+        </div>
+        <div class="row">
+          <%= error_tag f, :hour_limit %>
         </div>
       </div>
       <div class="column column-40">
         <div class="row">
-          <button
-            <%= if String.trim(@project_name) == "" || @name_taken, do: "disabled", else: "" %>
-          >
+          <button>
             Add project
           </button>
         </div>
       </div>
     </div>
-    <%= if @name_taken do %>
-      <div class="row">
-        <div class="error">
-          That project name is taken.
-        </div>
-      </div>
-    <% end %>
   </form>
 </section>
 
