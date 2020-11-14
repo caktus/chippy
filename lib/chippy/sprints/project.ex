@@ -12,6 +12,7 @@ defmodule Chippy.Sprints.Project do
   def validate_unique_sprint_project(changeset) do
     sprint_name = get_field(changeset, :sprint_name)
     project_name = get_field(changeset, :name)
+
     if sprint_name && project_name && SprintServer.has_project?(sprint_name, project_name) do
       add_error(changeset, :name, "That project exists already")
     else

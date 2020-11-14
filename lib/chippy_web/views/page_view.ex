@@ -4,7 +4,7 @@ defmodule ChippyWeb.PageView do
   @doc """
   Returns the hour_limit for a particular project.
 
-    iex> Sprint.new([]) |> Sprint.add_project("Foo", "22") |> PageView.hour_limit("Foo")
+    iex> Sprint.new([]) |> Sprint.add_project("Foo", 22) |> PageView.hour_limit("Foo")
     22
   """
   def hour_limit(sprint, project_name) do
