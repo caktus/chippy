@@ -58,7 +58,8 @@
           <%= text_input f, :name,
               placeholder: "Name",
               autofocus: "on",
-              autocomplete: "off" %>
+              autocomplete: "off",
+              phx_debounce: "500" %>
         </div>
         <div class="row">
           <%= error_tag f, :name %>

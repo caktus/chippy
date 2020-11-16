@@ -74,10 +74,10 @@ defmodule ChippyWeb.SprintLive.Show do
   def handle_event(
         "lookup_project",
         %{"project" => params},
-        socket
+        %{assigns: %{sprint_id: sprint_id}} = socket
       ) do
     changeset =
-      %Project{}
+      %Project{sprint_name: sprint_id}
       |> Project.changeset(params)
       |> Map.put(:action, :insert)
 
