@@ -4,6 +4,7 @@ defmodule ChippyWeb.SprintLive.Show do
   alias Phoenix.PubSub
   alias Phoenix.Socket.Broadcast
   alias Chippy.SprintServer
+  alias Chippy.Sprints.Project
   alias ChippyWeb.Presence
 
   def render(assigns) do
@@ -33,6 +34,8 @@ defmodule ChippyWeb.SprintLive.Show do
   def mount(%{"sid" => sprint_id}, %{"user_id" => user_id}, socket) do
     pid_or_nil = sprint_id |> SprintServer.via_tuple() |> GenServer.whereis()
 
+    changeset = %Project{} |> Project.changeset(%{})
+
     case pid_or_nil do
       pid when is_pid(pid) ->
         PubSub.subscribe(Chippy.PubSub, "sprint:" <> sprint_id)
@@ -43,10 +46,8 @@ defmodule ChippyWeb.SprintLive.Show do
          assign(socket, %{
            sprint_id: sprint_id,
            sprint: SprintServer.display(sprint_id),
+           changeset: changeset,
            your_name: user_id,
-           name_taken: false,
-           errors: "",
-           project_name: "",
            sprint_users: sprint_users(sprint_id)
          })}
 
@@ -72,23 +73,44 @@ defmodule ChippyWeb.SprintLive.Show do
 
   def handle_event(
         "lookup_project",
-        %{"project_name" => project_name},
+        %{"project" => params},
         %{assigns: %{sprint_id: sprint_id}} = socket
       ) do
-    {:noreply,
-     assign(socket,
-       project_name: project_name,
-       name_taken: SprintServer.has_project?(sprint_id, project_name)
-     )}
+    changeset =
+      %Project{sprint_name: sprint_id}
+      |> Project.changeset(params)
+      |> Map.put(:action, :insert)
+
+    socket = assign(socket, changeset: changeset)
+
+    {:noreply, socket}
   end
 
   def handle_event(
         "create_project",
-        %{"project_name" => project_name, "hour_limit" => hour_limit},
+        %{"project" => params},
         %{assigns: %{sprint_id: sprint_id}} = socket
       ) do
-    new_sprint = SprintServer.add_project(sprint_id, project_name, hour_limit)
-    update_sprint(sprint_id, new_sprint, socket)
+    changeset =
+      %Project{sprint_name: sprint_id}
+      |> Project.changeset(params)
+      |> Map.put(:action, :insert)
+
+    if changeset.valid? do
+      # apply the changeset to create a new project
+      project = Ecto.Changeset.apply_changes(changeset)
+
+      # create a new empty changeset for the form
+      changeset = %Project{} |> Project.changeset(%{})
+
+      socket = assign(socket, changeset: changeset)
+
+      new_sprint = SprintServer.add_project(sprint_id, project.name, project.hour_limit)
+      update_sprint(sprint_id, new_sprint, socket)
+    else
+      socket = assign(socket, changeset: changeset)
+      {:noreply, socket}
+    end
   end
 
   def handle_event(

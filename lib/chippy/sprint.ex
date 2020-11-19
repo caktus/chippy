@@ -1,5 +1,4 @@
 defmodule Chippy.Sprint do
-  @derive Jason.Encoder
   defstruct project_allocations: %{},
             project_limits: %{}
 
@@ -22,22 +21,15 @@ defmodule Chippy.Sprint do
   @doc """
   Adds a new empty project to a sprint.
 
-  Takes a project_name and an optional hour_limit which is converted to an integer.
+  Takes a project_name and an optional hour_limit which has already been converted to an integer.
 
-    iex> Sprint.new([]) |> Sprint.add_project("Foo", "22")
+    iex> Sprint.new([]) |> Sprint.add_project("Foo", 22)
     %Sprint{
       project_allocations: %{"Foo" => %{}},
       project_limits: %{"Foo" => 22}
     }
   """
   def add_project(sprint, project_name, hour_limit) do
-    hour_limit =
-      case Integer.parse(hour_limit) do
-        # returns a 2-tuple if successful parse with value in first tuple
-        {hour_limit, _} -> hour_limit
-        :error -> 0
-      end
-
     %Sprint{
       project_allocations: Map.put(sprint.project_allocations, project_name, %{}),
       project_limits: Map.put(sprint.project_limits, project_name, hour_limit)
@@ -52,7 +44,11 @@ defmodule Chippy.Sprint do
   end
 
   def has_project?(%Sprint{project_allocations: project_allocations}, project_name) do
-    Map.has_key?(project_allocations, project_name)
+    # case insensitive search for project_name in project_allocations
+    project_allocations
+    |> Map.keys()
+    |> Enum.map(&String.downcase/1)
+    |> Enum.member?(String.downcase(project_name))
   end
 
   def sorted_allocations(sprint) do
