@@ -61,7 +61,7 @@ jobs:
           command: |
             python3 -m venv env
             . env/bin/activate
-            pip install -r requirements.txt
+            pip install -Ur requirements.txt
       - save_cache:
           key: v1-pip-{{ checksum "requirements.txt" }}
           paths:
@@ -106,7 +106,7 @@ jobs:
               ENV=production
             fi
             echo deploying $CIRCLE_BRANCH to $ENV
-            inv $ENV image deploy
+            inv $ENV image deploy --verbosity=0
 
       - slack/status:
           success_message: ":rocket: Deployed ${CIRCLE_BRANCH} branch. <${CIRCLE_BUILD_URL}|Deploy Status> :success:"
