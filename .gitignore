@@ -46,3 +46,6 @@ deploy/roles/
 
 # IDE files
 .elixir_ls
+
+.direnv
+.envrc
