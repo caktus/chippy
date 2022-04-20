@@ -73,7 +73,7 @@ Login to the docker registry and configure kubectl:
 
 ```
 inv aws.docker-login
-inv.aws.configure-eks-kubeconfig
+inv aws.configure-eks-kubeconfig
 ```
 
 To deploy the current working directory to staging:
