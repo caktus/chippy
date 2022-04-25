@@ -49,3 +49,4 @@ deploy/roles/
 
 .direnv
 .envrc
+env/

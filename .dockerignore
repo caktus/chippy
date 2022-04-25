@@ -9,3 +9,6 @@ erl_crash.dump
 .git
 requirements.txt
 tasks.py
+.envrc
+.direnv
+env
